@@ -1,31 +1,32 @@
 import React, { useEffect } from 'react';
 import INode from '../../types/INode';
-import IEdge from '../../types/IEdge';
+import ILink from '../../types/ILink';
 import IComment from '../../types/IComment';
 import IdType from '../../types/IdType';
+import parseLinkName from '../../utils/parseLinkName';
 
 interface IGraphContextValue {
     getNewId: () => IdType;
     nodes: INode[];
-    edges: IEdge[];
+    links: ILink[];
     comments: IComment[];
     initGraph: ({
         nodes,
-        edges,
+        links,
         comments,
     }: {
         nodes: INode[];
-        edges: IEdge[];
+        links: ILink[];
         comments: IComment[];
     }) => void;
     addNode: (node: INode) => void;
     addComment: (comment: IComment) => void;
-    addEdge: (edge: IEdge) => void;
+    addLink: (link: ILink) => void;
     deleteComment: (id: IdType) => void;
-    deleteEdge: (id: IdType) => void;
+    deleteLink: (id: IdType) => void;
     deleteNode: (id: IdType) => void;
     editComment: (id: IdType, comment: IComment) => void;
-    editEdge: (id: IdType, edge: IEdge) => void;
+    editLink: (id: IdType, link: ILink) => void;
     editNode: (id: IdType, node: INode) => void;
 }
 const GraphContext = React.createContext<IGraphContextValue>(
@@ -40,27 +41,28 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
     const [initialized, setInitialized] = React.useState(false);
     const [nextId, setNextId] = React.useState<IdType>(1);
     const [nodes, setNodes] = React.useState<INode[]>([]);
-    const [edges, setEdges] = React.useState<IEdge[]>([]);
+    const [links, setLinks] = React.useState<ILink[]>([]);
     const [comments, setComments] = React.useState<IComment[]>([]);
 
     const initGraph = React.useCallback(
         ({
             nodes,
-            edges,
+            links,
             comments,
         }: {
             nodes: INode[];
-            edges: IEdge[];
+            links: ILink[];
             comments: IComment[];
         }) => {
             const lastId = Math.max(
+                0,
                 ...nodes.map((node) => node.id),
-                ...edges.map((edge) => edge.id),
+                ...links.map((link) => link.id),
                 ...comments.map((comment) => comment.id)
             );
             setNextId(lastId + 1);
             setNodes(nodes);
-            setEdges(edges);
+            setLinks(links);
             setComments(comments);
         },
         []
@@ -69,8 +71,12 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
     useEffect(() => {
         const graph = localStorage.getItem('graph');
         if (graph) {
-            const { nodes, edges, comments } = JSON.parse(graph);
-            initGraph({ nodes, edges, comments });
+            const { nodes, links, comments } = JSON.parse(graph);
+            initGraph({
+                nodes: nodes || [],
+                links: links || [],
+                comments: comments || [],
+            });
         }
         setInitialized(true);
     }, [initGraph]);
@@ -79,9 +85,9 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         if (!initialized) return;
         localStorage.setItem(
             'graph',
-            JSON.stringify({ nodes, edges, comments })
+            JSON.stringify({ nodes, links, comments })
         );
-    }, [nodes, edges, comments, initialized]);
+    }, [nodes, links, comments, initialized]);
 
     const getNewId = React.useCallback(() => {
         setNextId((prevId) => prevId + 1);
@@ -94,13 +100,20 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
 
     const deleteNode = React.useCallback((id: IdType) => {
         setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
-        setEdges((prevEdges) =>
-            prevEdges.filter(
-                (edge) => edge.node1Id !== id && edge.node2Id !== id
-            )
+        const deletedLinks: IdType[] = [];
+        setLinks((prevLinks) =>
+            prevLinks.filter((link) => {
+                const stays = link.node1Id !== id && link.node2Id !== id;
+                if (!stays) deletedLinks.push(link.id);
+                return stays;
+            })
         );
         setComments((prevComments) =>
-            prevComments.filter((comment) => comment.targetId !== id)
+            prevComments.filter(
+                (comment) =>
+                    comment.targetId !== id ||
+                    deletedLinks.includes(comment.targetId)
+            )
         );
     }, []);
 
@@ -113,15 +126,15 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 return prevNode;
             })
         );
-        setEdges((prevEdges) =>
-            prevEdges.map((prevEdge) => {
-                if (prevEdge.node1Id === id) {
-                    return { ...prevEdge, node1Name: node.name };
+        setLinks((prevLinks) =>
+            prevLinks.map((prevLink) => {
+                if (prevLink.node1Id === id) {
+                    return { ...prevLink, node1Name: node.name };
                 }
-                if (prevEdge.node2Id === id) {
-                    return { ...prevEdge, node2Name: node.name };
+                if (prevLink.node2Id === id) {
+                    return { ...prevLink, node2Name: node.name };
                 }
-                return prevEdge;
+                return prevLink;
             })
         );
         setComments((prevComments) =>
@@ -134,30 +147,30 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         );
     }, []);
 
-    const addEdge = React.useCallback((edge: IEdge) => {
-        setEdges((prevEdges) => [...prevEdges, edge]);
+    const addLink = React.useCallback((link: ILink) => {
+        setLinks((prevLinks) => [...prevLinks, link]);
     }, []);
 
-    const deleteEdge = React.useCallback((id: IdType) => {
-        setEdges((prevEdges) => prevEdges.filter((edge) => edge.id !== id));
+    const deleteLink = React.useCallback((id: IdType) => {
+        setLinks((prevLinks) => prevLinks.filter((link) => link.id !== id));
         setComments((prevComments) =>
             prevComments.filter((comment) => comment.targetId !== id)
         );
     }, []);
 
-    const editEdge = React.useCallback((id: IdType, edge: IEdge) => {
-        setEdges((prevEdges) =>
-            prevEdges.map((prevEdge) => {
-                if (prevEdge.id === id) {
-                    return edge;
+    const editLink = React.useCallback((id: IdType, link: ILink) => {
+        setLinks((prevLinks) =>
+            prevLinks.map((prevLink) => {
+                if (prevLink.id === id) {
+                    return link;
                 }
-                return prevEdge;
+                return prevLink;
             })
         );
         setComments((prevComments) =>
             prevComments.map((prevComment) => {
                 if (prevComment.targetId === id) {
-                    return { ...prevComment, targetName: edge.name };
+                    return { ...prevComment, targetName: parseLinkName(link) };
                 }
                 return prevComment;
             })
@@ -190,17 +203,17 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
             value={{
                 getNewId,
                 nodes,
-                edges,
+                links: links,
                 comments,
                 initGraph,
                 addNode,
                 addComment,
-                addEdge,
+                addLink,
                 deleteComment,
-                deleteEdge,
+                deleteLink,
                 deleteNode,
                 editComment,
-                editEdge,
+                editLink,
                 editNode,
             }}>
             {children}

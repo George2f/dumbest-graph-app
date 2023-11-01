@@ -1,25 +1,25 @@
 import React from 'react';
 import { useGraph } from '../providers/GraphProvider';
 import INode from '../types/INode';
-import IEdge from '../types/IEdge';
+import ILink from '../types/ILink';
 import IComment from '../types/IComment';
-import EDGE_TYPE_ENUM from '../types/EdgeTypeEnum';
-import parseEdgeName from '../utils/parseEdgeName';
+import LINK_TYPE_ENUM from '../types/LinkTypeEnum';
+import parseLinkName from '../utils/parseLinkName';
 
 export default function Graph() {
     const {
         nodes,
-        edges,
+        links,
         comments,
         initGraph,
         addNode,
-        addEdge,
+        addLink,
         addComment,
         editNode,
-        editEdge,
+        editLink,
         editComment,
         deleteNode,
-        deleteEdge,
+        deleteLink,
         deleteComment,
         getNewId,
     } = useGraph();
@@ -32,25 +32,25 @@ export default function Graph() {
     const [newCommentText, setNewCommentText] = React.useState<string>('');
     const [newCommentTargetNode, setNewCommentTargetNode] =
         React.useState<INode | null>(null);
-    const [newCommentTargetEdge, setNewCommentTargetEdge] =
-        React.useState<IEdge | null>(null);
+    const [newCommentTargetLink, setNewCommentTargetLink] =
+        React.useState<ILink | null>(null);
 
     const [workingComment, setWorkingComment] = React.useState<IComment | null>(
         null
     );
     const [editCommentText, setEditCommentText] = React.useState<string>('');
 
-    const [newEdgeName, setNewEdgeName] = React.useState<string>('');
-    const [newEdgeType, setNewEdgeType] = React.useState<EDGE_TYPE_ENUM>(
-        EDGE_TYPE_ENUM.SIMPLE
+    const [newLinkName, setNewLinkName] = React.useState<string>('');
+    const [newLinkType, setNewLinkType] = React.useState<LINK_TYPE_ENUM>(
+        LINK_TYPE_ENUM.SIMPLE
     );
-    const [newEdgeNode1, setNewEdgeNode1] = React.useState<INode | null>(null);
-    const [newEdgeNode2, setNewEdgeNode2] = React.useState<INode | null>(null);
+    const [newLinkNode1, setNewLinkNode1] = React.useState<INode | null>(null);
+    const [newLinkNode2, setNewLinkNode2] = React.useState<INode | null>(null);
 
-    const [workingEdge, setWorkingEdge] = React.useState<IEdge | null>(null);
-    const [editEdgeName, setEditEdgeName] = React.useState<string>('');
-    const [editEdgeType, setEditEdgeType] = React.useState<EDGE_TYPE_ENUM>(
-        EDGE_TYPE_ENUM.SIMPLE
+    const [workingLink, setWorkingLink] = React.useState<ILink | null>(null);
+    const [editLinkName, setEditLinkName] = React.useState<string>('');
+    const [editLinkType, setEditLinkType] = React.useState<LINK_TYPE_ENUM>(
+        LINK_TYPE_ENUM.SIMPLE
     );
 
     const [exportFileName, setExportFileName] =
@@ -96,7 +96,11 @@ export default function Graph() {
                             e.preventDefault();
                             if (!exportFileName) return;
                             const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-                                JSON.stringify({ nodes, edges, comments })
+                                JSON.stringify({
+                                    nodes,
+                                    links,
+                                    comments,
+                                })
                             )}`;
                             const link = document.createElement('a');
                             link.href = jsonString;
@@ -196,12 +200,12 @@ export default function Graph() {
                     </ul>
                 </section>
                 <section>
-                    <h2>Edges</h2>
-                    <h3>New Edge</h3>
+                    <h2>Links</h2>
+                    <h3>New Link</h3>
                     <h4>Choose a node</h4>
                     <select
                         onChange={(event) => {
-                            setNewEdgeNode1(
+                            setNewLinkNode1(
                                 nodes.find(
                                     (node) =>
                                         node.id.toString() ===
@@ -209,7 +213,7 @@ export default function Graph() {
                                 ) || null
                             );
                         }}
-                        value={newEdgeNode1?.id || 0}>
+                        value={newLinkNode1?.id || 0}>
                         <option value={0}>--</option>
                         {nodes.map((node) => (
                             <option key={node.id} value={node.id}>
@@ -220,7 +224,7 @@ export default function Graph() {
                     <h4>And another one</h4>
                     <select
                         onChange={(event) => {
-                            setNewEdgeNode2(
+                            setNewLinkNode2(
                                 nodes.find(
                                     (node) =>
                                         node.id.toString() ===
@@ -228,7 +232,7 @@ export default function Graph() {
                                 ) || null
                             );
                         }}
-                        value={newEdgeNode2?.id || 0}>
+                        value={newLinkNode2?.id || 0}>
                         <option value={0}>--</option>
                         {nodes.map((node) => (
                             <option key={node.id} value={node.id}>
@@ -239,14 +243,14 @@ export default function Graph() {
                     <h4>How do they relate</h4>
                     <select
                         onChange={(event) => {
-                            setNewEdgeType(
-                                event.target.value as unknown as EDGE_TYPE_ENUM
+                            setNewLinkType(
+                                event.target.value as unknown as LINK_TYPE_ENUM
                             );
                         }}
-                        value={newEdgeType}>
-                        <option value={EDGE_TYPE_ENUM.SIMPLE}>Simple</option>
-                        <option value={EDGE_TYPE_ENUM.A_TO_B}>A to B</option>
-                        <option value={EDGE_TYPE_ENUM.BOTH_WAYS}>
+                        value={newLinkType}>
+                        <option value={LINK_TYPE_ENUM.SIMPLE}>Simple</option>
+                        <option value={LINK_TYPE_ENUM.A_TO_B}>A to B</option>
+                        <option value={LINK_TYPE_ENUM.BOTH_WAYS}>
                             Both Ways
                         </option>
                     </select>
@@ -256,97 +260,97 @@ export default function Graph() {
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
-                            if (!newEdgeNode1 || !newEdgeNode2) return;
-                            addEdge({
+                            if (!newLinkNode1 || !newLinkNode2) return;
+                            addLink({
                                 id: getNewId(),
-                                node1Id: newEdgeNode1.id,
-                                node1Name: newEdgeNode1.name,
-                                node2Id: newEdgeNode2.id,
-                                node2Name: newEdgeNode2.name,
-                                type: newEdgeType,
-                                name: newEdgeName,
+                                node1Id: newLinkNode1.id,
+                                node1Name: newLinkNode1.name,
+                                node2Id: newLinkNode2.id,
+                                node2Name: newLinkNode2.name,
+                                type: newLinkType,
+                                name: newLinkName,
                             });
-                            setNewEdgeName('');
-                            setNewEdgeNode1(null);
-                            setNewEdgeNode2(null);
-                            setNewEdgeType(EDGE_TYPE_ENUM.SIMPLE);
+                            setNewLinkName('');
+                            setNewLinkNode1(null);
+                            setNewLinkNode2(null);
+                            setNewLinkType(LINK_TYPE_ENUM.SIMPLE);
                         }}>
                         <div>
-                            {newEdgeNode1?.name}{' '}
+                            {newLinkNode1?.name}{' '}
                             <input
                                 type="text"
-                                value={newEdgeName}
+                                value={newLinkName}
                                 onChange={(event) =>
-                                    setNewEdgeName(event.target.value)
+                                    setNewLinkName(event.target.value)
                                 }
                             />
                             {''}
-                            {newEdgeNode2?.name}
+                            {newLinkNode2?.name}
                         </div>
-                        <button type="submit">Add Edge</button>
+                        <button type="submit">Add Link</button>
                     </form>
-                    <h3>Edit Edge</h3>
+                    <h3>Edit Link</h3>
                     <ul>
-                        {edges.map((edge) => (
-                            <li key={edge.id}>
-                                {workingEdge?.id === edge.id ? (
+                        {links.map((link) => (
+                            <li key={link.id}>
+                                {workingLink?.id === link.id ? (
                                     <form
                                         onSubmit={(e) => {
                                             e.preventDefault();
-                                            if (!workingEdge) return;
-                                            editEdge(workingEdge.id, {
-                                                ...workingEdge,
-                                                name: editEdgeName,
-                                                type: editEdgeType,
+                                            if (!workingLink) return;
+                                            editLink(workingLink.id, {
+                                                ...workingLink,
+                                                name: editLinkName,
+                                                type: editLinkType,
                                             });
-                                            setWorkingEdge(null);
-                                            setEditEdgeName('');
-                                            setEditEdgeType(
-                                                EDGE_TYPE_ENUM.SIMPLE
+                                            setWorkingLink(null);
+                                            setEditLinkName('');
+                                            setEditLinkType(
+                                                LINK_TYPE_ENUM.SIMPLE
                                             );
                                         }}>
                                         <div>
-                                            {workingEdge.node1Name}{' '}
-                                            {editEdgeType ===
-                                            EDGE_TYPE_ENUM.BOTH_WAYS
+                                            {workingLink.node1Name}{' '}
+                                            {editLinkType ===
+                                            LINK_TYPE_ENUM.BOTH_WAYS
                                                 ? '<='
                                                 : '=='}
                                             <input
                                                 type="text"
-                                                value={editEdgeName}
+                                                value={editLinkName}
                                                 onChange={(event) =>
-                                                    setEditEdgeName(
+                                                    setEditLinkName(
                                                         event.target.value
                                                     )
                                                 }
                                             />
-                                            {editEdgeType ===
-                                                EDGE_TYPE_ENUM.A_TO_B ||
-                                            editEdgeType ===
-                                                EDGE_TYPE_ENUM.BOTH_WAYS
+                                            {editLinkType ===
+                                                LINK_TYPE_ENUM.A_TO_B ||
+                                            editLinkType ===
+                                                LINK_TYPE_ENUM.BOTH_WAYS
                                                 ? '=>'
                                                 : '=='}{' '}
-                                            {workingEdge.node2Name}
+                                            {workingLink.node2Name}
                                         </div>
                                         <select
                                             onChange={(event) => {
-                                                setEditEdgeType(
+                                                setEditLinkType(
                                                     event.target
-                                                        .value as unknown as EDGE_TYPE_ENUM
+                                                        .value as unknown as LINK_TYPE_ENUM
                                                 );
                                             }}
-                                            value={editEdgeType}>
+                                            value={editLinkType}>
                                             <option
-                                                value={EDGE_TYPE_ENUM.SIMPLE}>
+                                                value={LINK_TYPE_ENUM.SIMPLE}>
                                                 Simple
                                             </option>
                                             <option
-                                                value={EDGE_TYPE_ENUM.A_TO_B}>
+                                                value={LINK_TYPE_ENUM.A_TO_B}>
                                                 A to B
                                             </option>
                                             <option
                                                 value={
-                                                    EDGE_TYPE_ENUM.BOTH_WAYS
+                                                    LINK_TYPE_ENUM.BOTH_WAYS
                                                 }>
                                                 Both Ways
                                             </option>
@@ -355,20 +359,20 @@ export default function Graph() {
                                     </form>
                                 ) : (
                                     <>
-                                        {edge.id}{' '}
+                                        {link.id}{' '}
                                         <button
                                             onClick={() => {
-                                                setWorkingEdge(edge);
-                                                setEditEdgeName(edge.name);
-                                                setEditEdgeType(edge.type);
+                                                setWorkingLink(link);
+                                                setEditLinkName(link.name);
+                                                setEditLinkType(link.type);
                                             }}>
-                                            {parseEdgeName(edge)}
+                                            {parseLinkName(link)}
                                         </button>
                                     </>
                                 )}
                                 <button
                                     onClick={() => {
-                                        deleteEdge(edge.id);
+                                        deleteLink(link.id);
                                     }}>
                                     Delete
                                 </button>
@@ -391,7 +395,7 @@ export default function Graph() {
                                         event.target.value
                                 ) || null
                             );
-                            setNewCommentTargetEdge(null);
+                            setNewCommentTargetLink(null);
                         }}>
                         <option value={0}>--</option>
                         {nodes.map((node) => (
@@ -400,23 +404,23 @@ export default function Graph() {
                             </option>
                         ))}
                     </select>
-                    <h4>Or an edge</h4>
+                    <h4>Or an link</h4>
                     <select
                         onChange={(event) => {
-                            setNewCommentTargetEdge(
-                                edges.find(
-                                    (edge) =>
-                                        edge.id.toString() ===
+                            setNewCommentTargetLink(
+                                links.find(
+                                    (link) =>
+                                        link.id.toString() ===
                                         event.target.value
                                 ) || null
                             );
                             setNewCommentTargetNode(null);
                         }}
-                        value={newCommentTargetEdge?.id || 0}>
+                        value={newCommentTargetLink?.id || 0}>
                         <option value={0}>--</option>
-                        {edges.map((edge) => (
-                            <option key={edge.id} value={edge.id}>
-                                {parseEdgeName(edge)}
+                        {links.map((link) => (
+                            <option key={link.id} value={link.id}>
+                                {parseLinkName(link)}
                             </option>
                         ))}
                     </select>
@@ -426,18 +430,18 @@ export default function Graph() {
                             e.preventDefault();
                             if (!newCommentText)
                                 return console.log('No comment');
-                            if (!newCommentTargetEdge && !newCommentTargetNode)
+                            if (!newCommentTargetLink && !newCommentTargetNode)
                                 return console.log('No target');
 
                             addComment({
                                 id: getNewId(),
                                 text: newCommentText,
                                 targetId:
-                                    newCommentTargetEdge?.id ||
+                                    newCommentTargetLink?.id ||
                                     newCommentTargetNode?.id ||
                                     0,
                                 targetName:
-                                    newCommentTargetEdge?.name ||
+                                    newCommentTargetLink?.name ||
                                     newCommentTargetNode?.name ||
                                     '',
                             });
@@ -517,7 +521,7 @@ export default function Graph() {
             </main>
             <footer>
                 <p>Nodes: {nodes.length}</p>
-                <p>Edges: {edges.length}</p>
+                <p>Links: {links.length}</p>
                 <p>Comments: {comments.length}</p>
             </footer>
         </div>
