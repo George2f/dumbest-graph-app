@@ -1,9 +1,9 @@
-import Graph from './Graph';
+import Dashboard from './Dashboard';
 
 function App() {
     return (
         <>
-            <Graph />
+            <Dashboard />
         </>
     );
 }

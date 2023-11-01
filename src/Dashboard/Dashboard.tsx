@@ -6,7 +6,7 @@ import IComment from '../types/IComment';
 import LINK_TYPE_ENUM from '../types/LinkTypeEnum';
 import parseLinkName from '../utils/parseLinkName';
 
-export default function Graph() {
+export default function Dashboard() {
     const {
         nodes,
         links,
