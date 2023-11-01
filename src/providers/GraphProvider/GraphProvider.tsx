@@ -128,13 +128,17 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         );
         setLinks((prevLinks) =>
             prevLinks.map((prevLink) => {
-                if (prevLink.node1Id === id) {
-                    return { ...prevLink, node1Name: node.name };
-                }
-                if (prevLink.node2Id === id) {
-                    return { ...prevLink, node2Name: node.name };
-                }
-                return prevLink;
+                return {
+                    ...prevLink,
+                    node1Name:
+                        prevLink.node1Id === id
+                            ? node.name
+                            : prevLink.node1Name,
+                    node2Name:
+                        prevLink.node2Id === id
+                            ? node.name
+                            : prevLink.node2Name,
+                };
             })
         );
         setComments((prevComments) =>

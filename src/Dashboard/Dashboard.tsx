@@ -5,6 +5,7 @@ import ILink from '../types/ILink';
 import IComment from '../types/IComment';
 import LINK_TYPE_ENUM from '../types/LinkTypeEnum';
 import parseLinkName from '../utils/parseLinkName';
+import LinkListItem from './components/LinkListItem';
 
 export default function Dashboard() {
     const {
@@ -48,10 +49,6 @@ export default function Dashboard() {
     const [newLinkNode2, setNewLinkNode2] = React.useState<INode | null>(null);
 
     const [workingLink, setWorkingLink] = React.useState<ILink | null>(null);
-    const [editLinkName, setEditLinkName] = React.useState<string>('');
-    const [editLinkType, setEditLinkType] = React.useState<LINK_TYPE_ENUM>(
-        LINK_TYPE_ENUM.SIMPLE
-    );
 
     const [exportFileName, setExportFileName] =
         React.useState<string>('data.json');
@@ -276,7 +273,10 @@ export default function Dashboard() {
                             setNewLinkType(LINK_TYPE_ENUM.SIMPLE);
                         }}>
                         <div>
-                            {newLinkNode1?.name}{' '}
+                            {newLinkNode1?.name}
+                            {newLinkType === LINK_TYPE_ENUM.BOTH_WAYS
+                                ? ' <='
+                                : ' =='}
                             <input
                                 type="text"
                                 value={newLinkName}
@@ -284,7 +284,10 @@ export default function Dashboard() {
                                     setNewLinkName(event.target.value)
                                 }
                             />
-                            {''}
+                            {newLinkType === LINK_TYPE_ENUM.SIMPLE
+                                ? '== '
+                                : '=> '}
+
                             {newLinkNode2?.name}
                         </div>
                         <button type="submit">Add Link</button>
@@ -292,91 +295,19 @@ export default function Dashboard() {
                     <h3>Edit Link</h3>
                     <ul>
                         {links.map((link) => (
-                            <li key={link.id}>
-                                {workingLink?.id === link.id ? (
-                                    <form
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            if (!workingLink) return;
-                                            editLink(workingLink.id, {
-                                                ...workingLink,
-                                                name: editLinkName,
-                                                type: editLinkType,
-                                            });
-                                            setWorkingLink(null);
-                                            setEditLinkName('');
-                                            setEditLinkType(
-                                                LINK_TYPE_ENUM.SIMPLE
-                                            );
-                                        }}>
-                                        <div>
-                                            {workingLink.node1Name}{' '}
-                                            {editLinkType ===
-                                            LINK_TYPE_ENUM.BOTH_WAYS
-                                                ? '<='
-                                                : '=='}
-                                            <input
-                                                type="text"
-                                                value={editLinkName}
-                                                onChange={(event) =>
-                                                    setEditLinkName(
-                                                        event.target.value
-                                                    )
-                                                }
-                                            />
-                                            {editLinkType ===
-                                                LINK_TYPE_ENUM.A_TO_B ||
-                                            editLinkType ===
-                                                LINK_TYPE_ENUM.BOTH_WAYS
-                                                ? '=>'
-                                                : '=='}{' '}
-                                            {workingLink.node2Name}
-                                        </div>
-                                        <select
-                                            onChange={(event) => {
-                                                setEditLinkType(
-                                                    event.target
-                                                        .value as unknown as LINK_TYPE_ENUM
-                                                );
-                                            }}
-                                            value={editLinkType}>
-                                            <option
-                                                value={LINK_TYPE_ENUM.SIMPLE}>
-                                                Simple
-                                            </option>
-                                            <option
-                                                value={LINK_TYPE_ENUM.A_TO_B}>
-                                                A to B
-                                            </option>
-                                            <option
-                                                value={
-                                                    LINK_TYPE_ENUM.BOTH_WAYS
-                                                }>
-                                                Both Ways
-                                            </option>
-                                        </select>
-                                        <button type="submit">Done</button>
-                                    </form>
-                                ) : (
-                                    <>
-                                        {link.id}{' '}
-                                        <button
-                                            onClick={() => {
-                                                setWorkingLink(link);
-                                                setEditLinkName(link.name);
-                                                setEditLinkType(link.type);
-                                            }}>
-                                            {parseLinkName(link)}
-                                        </button>
-                                    </>
-                                )}
-                                <button
-                                    onClick={() => {
-                                        deleteLink(link.id);
-                                    }}>
-                                    Delete
-                                </button>
-                            </li>
+                            <LinkListItem
+                                link={link}
+                                active={workingLink?.id === link.id}
+                                onDelete={() => {
+                                    deleteLink(link.id);
+                                }}
+                                onChange={(id, link) => {
+                                    editLink(id, link);
+                                    setWorkingLink(null);
+                                }}
+                                onClick={() => setWorkingLink(link)}
+                                nodes={nodes}
+                            />
                         ))}
                     </ul>
                 </section>
