@@ -19,6 +19,7 @@ interface IGraphContextValue {
         links: ILink[];
         comments: IComment[];
     }) => void;
+    clearGraph: () => void;
     addNode: (node: INode) => void;
     addComment: (comment: IComment) => void;
     addLink: (link: ILink) => void;
@@ -88,6 +89,12 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
             JSON.stringify({ nodes, links, comments })
         );
     }, [nodes, links, comments, initialized]);
+
+    const clearGraph = React.useCallback(() => {
+        setNodes([]);
+        setLinks([]);
+        setComments([]);
+    }, []);
 
     const getNewId = React.useCallback(() => {
         setNextId((prevId) => prevId + 1);
@@ -210,6 +217,7 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 links: links,
                 comments,
                 initGraph,
+                clearGraph,
                 addNode,
                 addComment,
                 addLink,

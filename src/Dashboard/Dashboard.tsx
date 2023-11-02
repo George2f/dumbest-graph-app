@@ -227,6 +227,7 @@ export default function Dashboard() {
                     {links.map((link) => (
                         <LinkListItem
                             link={link}
+                            key={link.id}
                             active={workingLink?.id === link.id}
                             onDelete={() => {
                                 deleteLink(link.id);
