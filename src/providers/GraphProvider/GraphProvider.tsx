@@ -101,113 +101,127 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         return nextId;
     }, [nextId]);
 
-    const addNode = React.useCallback((node: INode) => {
-        setNodes((prevNodes) => [...prevNodes, node]);
-    }, []);
-
-    const deleteNode = React.useCallback((id: IdType) => {
-        setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
-        const deletedLinks: IdType[] = [];
-        setLinks((prevLinks) =>
-            prevLinks.filter((link) => {
-                const stays = link.node1Id !== id && link.node2Id !== id;
-                if (!stays) deletedLinks.push(link.id);
-                return stays;
-            })
-        );
-        setComments((prevComments) =>
-            prevComments.filter(
-                (comment) =>
-                    comment.targetId !== id ||
-                    deletedLinks.includes(comment.targetId)
-            )
-        );
-    }, []);
-
-    const editNode = React.useCallback((id: IdType, node: INode) => {
-        setNodes((prevNodes) =>
-            prevNodes.map((prevNode) => {
-                if (prevNode.id === id) {
-                    return node;
-                }
-                return prevNode;
-            })
-        );
-        setLinks((prevLinks) =>
-            prevLinks.map((prevLink) => {
-                return {
-                    ...prevLink,
-                    node1Name:
-                        prevLink.node1Id === id
-                            ? node.name
-                            : prevLink.node1Name,
-                    node2Name:
-                        prevLink.node2Id === id
-                            ? node.name
-                            : prevLink.node2Name,
-                };
-            })
-        );
-        setComments((prevComments) =>
-            prevComments.map((prevComment) => {
-                if (prevComment.targetId === id) {
-                    return { ...prevComment, targetName: node.name };
-                }
-                return prevComment;
-            })
-        );
-    }, []);
-
-    const addLink = React.useCallback((link: ILink) => {
-        setLinks((prevLinks) => [...prevLinks, link]);
-    }, []);
-
-    const deleteLink = React.useCallback((id: IdType) => {
-        setLinks((prevLinks) => prevLinks.filter((link) => link.id !== id));
-        setComments((prevComments) =>
-            prevComments.filter((comment) => comment.targetId !== id)
-        );
-    }, []);
-
-    const editLink = React.useCallback((id: IdType, link: ILink) => {
-        setLinks((prevLinks) =>
-            prevLinks.map((prevLink) => {
-                if (prevLink.id === id) {
-                    return link;
-                }
-                return prevLink;
-            })
-        );
-        setComments((prevComments) =>
-            prevComments.map((prevComment) => {
-                if (prevComment.targetId === id) {
-                    return { ...prevComment, targetName: parseLinkName(link) };
-                }
-                return prevComment;
-            })
-        );
-    }, []);
-
-    const addComment = React.useCallback((comment: IComment) => {
+    const handleAddComment = React.useCallback((comment: IComment) => {
         setComments((prevComments) => [...prevComments, comment]);
     }, []);
 
-    const deleteComment = React.useCallback((id: IdType) => {
+    const handleDeleteComment = React.useCallback((id: IdType) => {
         setComments((prevComments) =>
             prevComments.filter((comment) => comment.id !== id)
         );
     }, []);
 
-    const editComment = React.useCallback((id: IdType, comment: IComment) => {
-        setComments((prevComments) =>
-            prevComments.map((prevComment) => {
-                if (prevComment.id === id) {
-                    return comment;
-                }
-                return prevComment;
-            })
-        );
+    const handleEditComment = React.useCallback(
+        (id: IdType, comment: IComment) => {
+            setComments((prevComments) =>
+                prevComments.map((prevComment) =>
+                    prevComment.id === id ? comment : prevComment
+                )
+            );
+        },
+        []
+    );
+
+    const handleAddLink = React.useCallback((link: ILink) => {
+        setLinks((prevLinks) => [...prevLinks, link]);
     }, []);
+
+    const handleDeleteLink = React.useCallback(
+        (id: IdType) => {
+            setLinks((prevLinks) => prevLinks.filter((link) => link.id !== id));
+
+            const commentsToDelete = comments.filter(
+                (comment) => comment.targetId === id
+            );
+
+            commentsToDelete.forEach((comment) =>
+                handleDeleteComment(comment.id)
+            );
+        },
+        [comments, handleDeleteComment]
+    );
+
+    const handleEditLink = React.useCallback(
+        (id: IdType, link: ILink) => {
+            setLinks((prevLinks) =>
+                prevLinks.map((prevLink) =>
+                    prevLink.id === id ? link : prevLink
+                )
+            );
+
+            const commentsToEdit = comments.filter(
+                (comment) => comment.targetId === id
+            );
+
+            commentsToEdit.forEach((comment) => {
+                handleEditComment(comment.id, {
+                    ...comment,
+                    targetName: parseLinkName(link),
+                });
+            });
+        },
+        [comments, handleEditComment]
+    );
+
+    const handleAddNode = React.useCallback((node: INode) => {
+        setNodes((prevNodes) => [...prevNodes, node]);
+    }, []);
+
+    const handleDeleteNode = React.useCallback(
+        (id: IdType) => {
+            setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
+            const linksToDelete = links.filter(
+                (link) => link.node1Id === id || link.node2Id === id
+            );
+
+            linksToDelete.forEach((link) => {
+                handleDeleteLink(link.id);
+            });
+
+            const commentsToDelete = comments.filter(
+                (comment) => comment.targetId === id
+            );
+
+            commentsToDelete.forEach((comment) => {
+                handleDeleteComment(comment.id);
+            });
+        },
+        [comments, handleDeleteComment, handleDeleteLink, links]
+    );
+
+    const handleEditNode = React.useCallback(
+        (id: IdType, node: INode) => {
+            setNodes((prevNodes) =>
+                prevNodes.map((prevNode) =>
+                    prevNode.id === id ? node : prevNode
+                )
+            );
+
+            const linksToEdit = links.filter(
+                (link) => link.node1Id === id || link.node2Id === id
+            );
+
+            linksToEdit.forEach((link) => {
+                handleEditLink(link.id, {
+                    ...link,
+                    node1Name: link.node1Id === id ? node.name : link.node1Name,
+                    node2Name: link.node2Id === id ? node.name : link.node2Name,
+                });
+            });
+
+            const commentsToEdit = comments.filter(
+                (comment) => comment.targetId === id
+            );
+
+            commentsToEdit.forEach((comment) => {
+                handleEditComment(comment.id, {
+                    ...comment,
+                    targetName: node.name,
+                });
+            });
+        },
+        [comments, handleEditComment, handleEditLink, links]
+    );
 
     return (
         <GraphContext.Provider
@@ -218,15 +232,15 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 comments,
                 initGraph,
                 clearGraph,
-                addNode,
-                addComment,
-                addLink,
-                deleteComment,
-                deleteLink,
-                deleteNode,
-                editComment,
-                editLink,
-                editNode,
+                addNode: handleAddNode,
+                addComment: handleAddComment,
+                addLink: handleAddLink,
+                deleteComment: handleDeleteComment,
+                deleteLink: handleDeleteLink,
+                deleteNode: handleDeleteNode,
+                editComment: handleEditComment,
+                editLink: handleEditLink,
+                editNode: handleEditNode,
             }}>
             {children}
         </GraphContext.Provider>

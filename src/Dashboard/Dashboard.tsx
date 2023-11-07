@@ -257,7 +257,8 @@ export default function Dashboard() {
                             ) || null
                         );
                         setNewCommentTargetLink(null);
-                    }}>
+                    }}
+                    value={newCommentTargetNode?.id || 0}>
                     <option value={0}>--</option>
                     {nodes.map((node) => (
                         <option key={node.id} value={node.id}>
