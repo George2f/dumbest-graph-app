@@ -2,9 +2,11 @@ import { useState } from 'react';
 import Dashboard from './Dashboard';
 import Graph from './Graph';
 import { useGraph } from './providers/GraphProvider';
+import { useHistory } from './providers/HistoryProvider';
 
 export default function App() {
     const { initGraph, clearGraph, nodes, links, comments } = useGraph();
+    const { getIndex, getLength, undo, redo } = useHistory();
     const [route, setRoute] = useState<string>('dashboard');
 
     const [exportFileName, setExportFileName] = useState<string>('dga-data');
@@ -99,6 +101,16 @@ export default function App() {
                             Dashboard
                         </button>
                         <button onClick={() => setRoute('graph')}>Graph</button>
+                        <button onClick={undo} disabled={getIndex() <= 0}>
+                            Undo
+                        </button>
+                        <button
+                            onClick={redo}
+                            disabled={
+                                getLength() - getIndex() > 0 || getIndex() > 0
+                            }>
+                            Redo
+                        </button>
                     </div>
                     <button
                         onClick={(e) => {
