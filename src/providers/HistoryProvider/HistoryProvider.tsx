@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import AbstractCommand from '../../types/AbstractCommand';
+import AbstractCommand from '../../Command/AbstractCommand';
 
 interface IHistoryContextValue {
     getIndex: () => number;
@@ -8,6 +8,8 @@ interface IHistoryContextValue {
     redo: () => void;
     clear: () => void;
     push: (command: AbstractCommand) => void;
+    getUndoInfo: () => string;
+    getRedoInfo: () => string;
 }
 
 const HistoryContext = createContext<IHistoryContextValue>(
@@ -55,6 +57,20 @@ export default function HistoryProvider({ children }: IHistoryProviderProps) {
         [history, index]
     );
 
+    const getUndoInfo = React.useCallback(() => {
+        if (index >= 0) {
+            return history[index].getInfo();
+        }
+        return '';
+    }, [history, index]);
+
+    const getRedoInfo = React.useCallback(() => {
+        if (index < history.length - 1) {
+            return history[index + 1].getInfo();
+        }
+        return '';
+    }, [history, index]);
+
     return (
         <HistoryContext.Provider
             value={{
@@ -64,6 +80,8 @@ export default function HistoryProvider({ children }: IHistoryProviderProps) {
                 push,
                 redo,
                 undo,
+                getUndoInfo,
+                getRedoInfo,
             }}>
             {children}
         </HistoryContext.Provider>

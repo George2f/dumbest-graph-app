@@ -5,7 +5,7 @@ import IComment from '../../types/IComment';
 import IdType from '../../types/IdType';
 import parseLinkName from '../../utils/parseLinkName';
 
-interface IGraphContextValue {
+export interface IGraph {
     getNewId: () => IdType;
     nodes: INode[];
     links: ILink[];
@@ -30,9 +30,7 @@ interface IGraphContextValue {
     editLink: (id: IdType, link: ILink) => void;
     editNode: (id: IdType, node: INode) => void;
 }
-const GraphContext = React.createContext<IGraphContextValue>(
-    {} as IGraphContextValue
-);
+const GraphContext = React.createContext<IGraph>({} as IGraph);
 
 interface IGraphProviderProps {
     children: React.ReactNode;
@@ -228,7 +226,7 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
             value={{
                 getNewId,
                 nodes,
-                links: links,
+                links,
                 comments,
                 initGraph,
                 clearGraph,

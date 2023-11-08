@@ -6,23 +6,14 @@ import IComment from '../types/IComment';
 import LINK_TYPE_ENUM from '../types/LinkTypeEnum';
 import parseLinkName from '../utils/parseLinkName';
 import LinkListItem from './components/LinkListItem';
+import AddCommentCommand from '../Command/AddCommentCommand';
+import { useHistory } from '../providers/HistoryProvider';
+import DeleteCommentCommand from '../Command/DeleteCommentCommand';
+import EditCommentCommand from '../Command/EditCommentCommand';
 
 export default function Dashboard() {
-    const {
-        nodes,
-        links,
-        comments,
-        addNode,
-        addLink,
-        addComment,
-        editNode,
-        editLink,
-        editComment,
-        deleteNode,
-        deleteLink,
-        deleteComment,
-        getNewId,
-    } = useGraph();
+    const graph = useGraph();
+    const history = useHistory();
 
     const [newNodeName, setNewNodeName] = React.useState<string>('');
 
@@ -48,6 +39,19 @@ export default function Dashboard() {
     const [newLinkNode2, setNewLinkNode2] = React.useState<INode | null>(null);
 
     const [workingLink, setWorkingLink] = React.useState<ILink | null>(null);
+
+    const {
+        nodes,
+        links,
+        comments,
+        addNode,
+        addLink,
+        editNode,
+        editLink,
+        deleteNode,
+        deleteLink,
+        getNewId,
+    } = graph;
 
     return (
         <main
@@ -293,18 +297,24 @@ export default function Dashboard() {
                         if (!newCommentTargetLink && !newCommentTargetNode)
                             return console.log('No target');
 
-                        addComment({
-                            id: getNewId(),
-                            text: newCommentText,
-                            targetId:
-                                newCommentTargetLink?.id ||
-                                newCommentTargetNode?.id ||
-                                0,
-                            targetName:
-                                newCommentTargetLink?.name ||
-                                newCommentTargetNode?.name ||
-                                '',
-                        });
+                        const command = new AddCommentCommand(
+                            {
+                                id: getNewId(),
+                                text: newCommentText,
+                                targetId:
+                                    newCommentTargetLink?.id ||
+                                    newCommentTargetNode?.id ||
+                                    0,
+                                targetName:
+                                    newCommentTargetLink?.name ||
+                                    newCommentTargetNode?.name ||
+                                    '',
+                            },
+                            graph
+                        );
+
+                        command.execute();
+                        history.push(command);
                         setNewCommentText('');
                     }}>
                     <label>
@@ -329,10 +339,18 @@ export default function Dashboard() {
                                         e.preventDefault();
                                         if (!workingComment) return;
                                         if (!editCommentText) return;
-                                        editComment(workingComment.id, {
-                                            ...workingComment,
-                                            text: editCommentText,
-                                        });
+
+                                        const command = new EditCommentCommand(
+                                            {
+                                                ...workingComment,
+                                                text: editCommentText,
+                                            },
+                                            graph
+                                        );
+
+                                        command.execute();
+                                        history.push(command);
+
                                         setWorkingComment(null);
                                         setEditCommentText('');
                                     }}>
@@ -368,7 +386,12 @@ export default function Dashboard() {
                             )}
                             <button
                                 onClick={() => {
-                                    deleteComment(comment.id);
+                                    const command = new DeleteCommentCommand(
+                                        comment,
+                                        graph
+                                    );
+                                    command.execute();
+                                    history.push(command);
                                 }}>
                                 Delete
                             </button>

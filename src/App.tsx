@@ -6,7 +6,7 @@ import { useHistory } from './providers/HistoryProvider';
 
 export default function App() {
     const { initGraph, clearGraph, nodes, links, comments } = useGraph();
-    const { getIndex, getLength, undo, redo } = useHistory();
+    const history = useHistory();
     const [route, setRoute] = useState<string>('dashboard');
 
     const [exportFileName, setExportFileName] = useState<string>('dga-data');
@@ -27,6 +27,20 @@ export default function App() {
 
         link.click();
     };
+
+    history.getLength() - history.getIndex() > 0 || history.getLength() === 0;
+    console.log(
+        '🚀 : file: App.tsx:33 : history.getLength() === 0:',
+        history.getLength() === 0
+    );
+    console.log(
+        '🚀 : file: App.tsx:32 : history.getIndex() > 0:',
+        history.getIndex() > 0
+    );
+    console.log(
+        '🚀 : file: App.tsx:32 : history.getLength():',
+        history.getLength()
+    );
 
     return (
         <div
@@ -101,15 +115,19 @@ export default function App() {
                             Dashboard
                         </button>
                         <button onClick={() => setRoute('graph')}>Graph</button>
-                        <button onClick={undo} disabled={getIndex() <= 0}>
-                            Undo
+                        <button
+                            onClick={history.undo}
+                            disabled={history.getIndex() < 0}>
+                            Undo {history.getUndoInfo()}
                         </button>
                         <button
-                            onClick={redo}
+                            onClick={history.redo}
                             disabled={
-                                getLength() - getIndex() > 0 || getIndex() > 0
+                                history.getIndex() ===
+                                    history.getLength() - 1 ||
+                                history.getLength() === 0
                             }>
-                            Redo
+                            Redo {history.getRedoInfo()}
                         </button>
                     </div>
                     <button
