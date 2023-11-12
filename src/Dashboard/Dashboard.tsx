@@ -6,10 +6,13 @@ import IComment from '../types/IComment';
 import LINK_TYPE_ENUM from '../types/LinkTypeEnum';
 import parseLinkName from '../utils/parseLinkName';
 import LinkListItem from './components/LinkListItem';
-import AddCommentCommand from '../Command/AddCommentCommand';
 import { useHistory } from '../providers/HistoryProvider';
+import AddCommentCommand from '../Command/AddCommentCommand';
 import DeleteCommentCommand from '../Command/DeleteCommentCommand';
 import EditCommentCommand from '../Command/EditCommentCommand';
+import AddLinkCommand from '../Command/AddLinkCommand';
+import DeleteLinkCommand from '../Command/DeleteLinkCommand';
+import EditLinkCommand from '../Command/EditLinkCommand';
 
 export default function Dashboard() {
     const graph = useGraph();
@@ -40,18 +43,8 @@ export default function Dashboard() {
 
     const [workingLink, setWorkingLink] = React.useState<ILink | null>(null);
 
-    const {
-        nodes,
-        links,
-        comments,
-        addNode,
-        addLink,
-        editNode,
-        editLink,
-        deleteNode,
-        deleteLink,
-        getNewId,
-    } = graph;
+    const { nodes, links, comments, addNode, editNode, deleteNode, getNewId } =
+        graph;
 
     return (
         <main
@@ -194,15 +187,23 @@ export default function Dashboard() {
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (!newLinkNode1 || !newLinkNode2) return;
-                        addLink({
-                            id: getNewId(),
-                            node1Id: newLinkNode1.id,
-                            node1Name: newLinkNode1.name,
-                            node2Id: newLinkNode2.id,
-                            node2Name: newLinkNode2.name,
-                            type: newLinkType,
-                            name: newLinkName,
-                        });
+
+                        const command = new AddLinkCommand(
+                            {
+                                id: getNewId(),
+                                node1Id: newLinkNode1.id,
+                                node1Name: newLinkNode1.name,
+                                node2Id: newLinkNode2.id,
+                                node2Name: newLinkNode2.name,
+                                type: newLinkType,
+                                name: newLinkName,
+                            },
+                            graph
+                        );
+
+                        command.execute();
+                        history.push(command);
+
                         setNewLinkName('');
                         setNewLinkNode1(null);
                         setNewLinkNode2(null);
@@ -234,10 +235,22 @@ export default function Dashboard() {
                             key={link.id}
                             active={workingLink?.id === link.id}
                             onDelete={() => {
-                                deleteLink(link.id);
+                                const command = new DeleteLinkCommand(
+                                    link,
+                                    graph
+                                );
+
+                                command.execute();
+                                history.push(command);
                             }}
                             onChange={(id, link) => {
-                                editLink(id, link);
+                                const command = new EditLinkCommand(
+                                    link,
+                                    graph
+                                );
+
+                                command.execute();
+                                history.push(command);
                                 setWorkingLink(null);
                             }}
                             onClick={() => setWorkingLink(link)}
