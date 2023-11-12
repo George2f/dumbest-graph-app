@@ -13,6 +13,9 @@ import EditCommentCommand from '../Command/EditCommentCommand';
 import AddLinkCommand from '../Command/AddLinkCommand';
 import DeleteLinkCommand from '../Command/DeleteLinkCommand';
 import EditLinkCommand from '../Command/EditLinkCommand';
+import AddNodeCommand from '../Command/AddNodeCommand';
+import EditNodeCommand from '../Command/EditNodeCommand';
+import DeleteNodeCommand from '../Command/DeleteNodeCommand';
 
 export default function Dashboard() {
     const graph = useGraph();
@@ -43,8 +46,7 @@ export default function Dashboard() {
 
     const [workingLink, setWorkingLink] = React.useState<ILink | null>(null);
 
-    const { nodes, links, comments, addNode, editNode, deleteNode, getNewId } =
-        graph;
+    const { nodes, links, comments, getNewId } = graph;
 
     return (
         <main
@@ -62,7 +64,16 @@ export default function Dashboard() {
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (!newNodeName) return;
-                        addNode({ id: getNewId(), name: newNodeName });
+                        const command = new AddNodeCommand(
+                            {
+                                id: getNewId(),
+                                name: newNodeName,
+                            },
+                            graph
+                        );
+                        command.execute();
+                        history.push(command);
+
                         setNewNodeName('');
                     }}>
                     <label>
@@ -88,10 +99,18 @@ export default function Dashboard() {
                                             e.preventDefault();
                                             if (!workingNode) return;
                                             if (!editNodeName) return;
-                                            editNode(workingNode.id, {
-                                                ...workingNode,
-                                                name: editNodeName,
-                                            });
+
+                                            const command = new EditNodeCommand(
+                                                {
+                                                    ...workingNode,
+                                                    name: editNodeName,
+                                                },
+                                                graph
+                                            );
+
+                                            command.execute();
+                                            history.push(command);
+
                                             setWorkingNode(null);
                                             setEditNodeName('');
                                         }}>
@@ -121,7 +140,13 @@ export default function Dashboard() {
                             )}
                             <button
                                 onClick={() => {
-                                    deleteNode(node.id);
+                                    const command = new DeleteNodeCommand(
+                                        node,
+                                        graph
+                                    );
+
+                                    command.execute();
+                                    history.push(command);
                                 }}>
                                 Delete
                             </button>

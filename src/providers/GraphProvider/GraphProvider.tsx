@@ -176,9 +176,15 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 handleDeleteLink(link.id);
             });
 
-            const commentsToDelete = comments.filter(
-                (comment) => comment.targetId === id
-            );
+            const commentsToDelete = comments
+                .filter((comment) => comment.targetId === id)
+                .concat(
+                    comments.filter((comment) =>
+                        linksToDelete.find(
+                            (link) => link.id === comment.targetId
+                        )
+                    )
+                );
 
             commentsToDelete.forEach((comment) => {
                 handleDeleteComment(comment.id);
