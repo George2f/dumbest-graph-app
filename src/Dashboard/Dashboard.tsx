@@ -4,7 +4,7 @@ import INode from '../types/INode';
 import ILink from '../types/ILink';
 import IComment from '../types/IComment';
 import LINK_TYPE_ENUM from '../types/LinkTypeEnum';
-import parseLinkName from '../utils/parseLinkName';
+import generateLinkName from '../utils/parseLinkName';
 import LinkListItem from './components/LinkListItem';
 import { useHistory } from '../providers/HistoryProvider';
 import AddCommentCommand from '../Command/AddCommentCommand';
@@ -43,8 +43,6 @@ export default function Dashboard() {
     );
     const [newLinkNode1, setNewLinkNode1] = React.useState<INode | null>(null);
     const [newLinkNode2, setNewLinkNode2] = React.useState<INode | null>(null);
-
-    const [workingLink, setWorkingLink] = React.useState<ILink | null>(null);
 
     const { nodes, links, comments, getNewId } = graph;
 
@@ -217,9 +215,7 @@ export default function Dashboard() {
                             {
                                 id: getNewId(),
                                 node1Id: newLinkNode1.id,
-                                node1Name: newLinkNode1.name,
                                 node2Id: newLinkNode2.id,
-                                node2Name: newLinkNode2.name,
                                 type: newLinkType,
                                 name: newLinkName,
                             },
@@ -258,7 +254,6 @@ export default function Dashboard() {
                         <LinkListItem
                             link={link}
                             key={link.id}
-                            active={workingLink?.id === link.id}
                             onDelete={() => {
                                 const command = new DeleteLinkCommand(
                                     link,
@@ -276,9 +271,7 @@ export default function Dashboard() {
 
                                 command.execute();
                                 history.push(command);
-                                setWorkingLink(null);
                             }}
-                            onClick={() => setWorkingLink(link)}
                             nodes={nodes}
                         />
                     ))}
@@ -323,7 +316,7 @@ export default function Dashboard() {
                     <option value={0}>--</option>
                     {links.map((link) => (
                         <option key={link.id} value={link.id}>
-                            {parseLinkName(link)}
+                            {generateLinkName(link, '', '')}
                         </option>
                     ))}
                 </select>
@@ -343,10 +336,6 @@ export default function Dashboard() {
                                     newCommentTargetLink?.id ||
                                     newCommentTargetNode?.id ||
                                     0,
-                                targetName:
-                                    newCommentTargetLink?.name ||
-                                    newCommentTargetNode?.name ||
-                                    '',
                             },
                             graph
                         );
@@ -407,7 +396,18 @@ export default function Dashboard() {
                                 <>
                                     <div>
                                         {comment.id}{' '}
-                                        <strong>{comment.targetName}</strong>
+                                        <strong>
+                                            {
+                                                (
+                                                    graph.getNode(
+                                                        comment.targetId
+                                                    ) ||
+                                                    graph.getLink(
+                                                        comment.targetId
+                                                    )
+                                                )?.name
+                                            }
+                                        </strong>
                                     </div>
                                     <div>
                                         <button

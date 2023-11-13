@@ -3,7 +3,6 @@ import INode from '../../types/INode';
 import ILink from '../../types/ILink';
 import IComment from '../../types/IComment';
 import IdType from '../../types/IdType';
-import parseLinkName from '../../utils/parseLinkName';
 
 export interface IGraph {
     getNewId: () => IdType;
@@ -29,6 +28,9 @@ export interface IGraph {
     editComment: (id: IdType, comment: IComment) => void;
     editLink: (id: IdType, link: ILink) => void;
     editNode: (id: IdType, node: INode) => void;
+    getNode(id: IdType): INode | undefined;
+    getLink(id: IdType): ILink | undefined;
+    getComment(id: IdType): IComment | undefined;
 }
 const GraphContext = React.createContext<IGraph>({} as IGraph);
 
@@ -139,27 +141,11 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         [comments, handleDeleteComment]
     );
 
-    const handleEditLink = React.useCallback(
-        (id: IdType, link: ILink) => {
-            setLinks((prevLinks) =>
-                prevLinks.map((prevLink) =>
-                    prevLink.id === id ? link : prevLink
-                )
-            );
-
-            const commentsToEdit = comments.filter(
-                (comment) => comment.targetId === id
-            );
-
-            commentsToEdit.forEach((comment) => {
-                handleEditComment(comment.id, {
-                    ...comment,
-                    targetName: parseLinkName(link),
-                });
-            });
-        },
-        [comments, handleEditComment]
-    );
+    const handleEditLink = React.useCallback((id: IdType, link: ILink) => {
+        setLinks((prevLinks) =>
+            prevLinks.map((prevLink) => (prevLink.id === id ? link : prevLink))
+        );
+    }, []);
 
     const handleAddNode = React.useCallback((node: INode) => {
         setNodes((prevNodes) => [...prevNodes, node]);
@@ -193,38 +179,25 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         [comments, handleDeleteComment, handleDeleteLink, links]
     );
 
-    const handleEditNode = React.useCallback(
-        (id: IdType, node: INode) => {
-            setNodes((prevNodes) =>
-                prevNodes.map((prevNode) =>
-                    prevNode.id === id ? node : prevNode
-                )
-            );
+    const handleEditNode = React.useCallback((id: IdType, node: INode) => {
+        setNodes((prevNodes) =>
+            prevNodes.map((prevNode) => (prevNode.id === id ? node : prevNode))
+        );
+    }, []);
 
-            const linksToEdit = links.filter(
-                (link) => link.node1Id === id || link.node2Id === id
-            );
+    const getNode = React.useCallback(
+        (id: IdType) => nodes.find((node) => node.id === id),
+        [nodes]
+    );
 
-            linksToEdit.forEach((link) => {
-                handleEditLink(link.id, {
-                    ...link,
-                    node1Name: link.node1Id === id ? node.name : link.node1Name,
-                    node2Name: link.node2Id === id ? node.name : link.node2Name,
-                });
-            });
+    const getLink = React.useCallback(
+        (id: IdType) => links.find((link) => link.id === id),
+        [links]
+    );
 
-            const commentsToEdit = comments.filter(
-                (comment) => comment.targetId === id
-            );
-
-            commentsToEdit.forEach((comment) => {
-                handleEditComment(comment.id, {
-                    ...comment,
-                    targetName: node.name,
-                });
-            });
-        },
-        [comments, handleEditComment, handleEditLink, links]
+    const getComment = React.useCallback(
+        (id: IdType) => comments.find((comment) => comment.id === id),
+        [comments]
     );
 
     return (
@@ -245,6 +218,9 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 editComment: handleEditComment,
                 editLink: handleEditLink,
                 editNode: handleEditNode,
+                getNode,
+                getLink,
+                getComment,
             }}>
             {children}
         </GraphContext.Provider>

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useGraph } from '../providers/GraphProvider';
 import { ForceGraph2D } from 'react-force-graph';
-import parseLinkName from '../utils/parseLinkName';
+import generateLinkName from '../utils/parseLinkName';
 import LINK_TYPE_ENUM from '../types/LinkTypeEnum';
 
 export default function Graph() {
@@ -26,11 +26,13 @@ export default function Graph() {
                 const label =
                     link.type === LINK_TYPE_ENUM.A_TO_B
                         ? link.name
-                        : parseLinkName({
-                              ...link,
-                              node1Name: '',
-                              node2Name: '',
-                          });
+                        : generateLinkName(
+                              {
+                                  ...link,
+                              },
+                              '',
+                              ''
+                          );
 
                 const firstNode = Math.min(link.node1Id, link.node2Id);
                 const secondNode = Math.max(link.node1Id, link.node2Id);
@@ -47,10 +49,8 @@ export default function Graph() {
                     id: link.id,
                     source: { id: link.node1Id, x: 0, y: 0 },
                     sourceId: link.node1Id,
-                    sourceName: link.node1Name,
                     target: { id: link.node2Id, x: 0, y: 0 },
                     targetId: link.node2Id,
-                    targetName: link.node2Name,
                     label:
                         label +
                         (linkComments.length ? ` *${linkComments.length}` : ''),
@@ -60,7 +60,7 @@ export default function Graph() {
                             ''
                         ) ||
                         (link.node1Id === link.node2Id
-                            ? parseLinkName(link)
+                            ? generateLinkName(link, '', '')
                             : ''),
                     comments: linkComments,
                     type: link.type,
@@ -136,8 +136,6 @@ export default function Graph() {
                         id: number;
                         source: { id: number; x: number; y: number };
                         target: { id: number; x: number; y: number };
-                        sourceName: string;
-                        targetName: string;
                         label: string;
                         curvature: number;
                         type: LINK_TYPE_ENUM;
