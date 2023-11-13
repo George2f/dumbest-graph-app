@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ILink from '../../../../../types/ILink';
 import generateLinkName from '../../../../../utils/parseLinkName';
 import INode from '../../../../../types/INode';
-import EditLinkModule from '../EditLinkModule';
+import EditLink from '../EditLink';
 
 interface ILinkListItemProps {
     link: ILink;
@@ -21,7 +21,7 @@ export default function LinkListItem({
     return (
         <li key={link.id}>
             {active ? (
-                <EditLinkModule
+                <EditLink
                     link={link}
                     onChange={(link) => {
                         onChange(link);
