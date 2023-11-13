@@ -1,7 +1,5 @@
-import GraphProvider, { IGraph, useGraph } from './GraphProvider';
+import GraphProvider, { useGraph } from './GraphProvider';
 
 export default GraphProvider;
 
 export { useGraph };
-
-export type { IGraph };

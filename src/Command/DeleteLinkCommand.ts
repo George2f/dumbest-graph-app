@@ -1,5 +1,5 @@
-import { IGraph } from '../providers/GraphProvider';
 import IComment from '../types/IComment';
+import IGraph from '../types/IGraph';
 import ILink from '../types/ILink';
 import AbstractCommand from './AbstractCommand';
 

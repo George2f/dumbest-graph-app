@@ -3,35 +3,8 @@ import INode from '../../types/INode';
 import ILink from '../../types/ILink';
 import IComment from '../../types/IComment';
 import IdType from '../../types/IdType';
+import IGraph from '../../types/IGraph';
 
-export interface IGraph {
-    getNewId: () => IdType;
-    nodes: INode[];
-    links: ILink[];
-    comments: IComment[];
-    initGraph: ({
-        nodes,
-        links,
-        comments,
-    }: {
-        nodes: INode[];
-        links: ILink[];
-        comments: IComment[];
-    }) => void;
-    clearGraph: () => void;
-    addNode: (node: INode) => void;
-    addComment: (comment: IComment) => void;
-    addLink: (link: ILink) => void;
-    deleteComment: (id: IdType) => void;
-    deleteLink: (id: IdType) => void;
-    deleteNode: (id: IdType) => void;
-    editComment: (id: IdType, comment: IComment) => void;
-    editLink: (id: IdType, link: ILink) => void;
-    editNode: (id: IdType, node: INode) => void;
-    getNode(id: IdType): INode | undefined;
-    getLink(id: IdType): ILink | undefined;
-    getComment(id: IdType): IComment | undefined;
-}
 const GraphContext = React.createContext<IGraph>({} as IGraph);
 
 interface IGraphProviderProps {

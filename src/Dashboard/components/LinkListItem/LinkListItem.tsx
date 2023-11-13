@@ -32,11 +32,11 @@ export default function LinkListItem({
                 />
             ) : (
                 <>
-                    {link.id}{' '}
                     <button
                         onClick={() => {
                             setActive(true);
                         }}>
+                        {link.id}{' '}
                         {generateLinkName(
                             link,
                             nodes.find((n) => n.id === link.node1Id)?.name ||

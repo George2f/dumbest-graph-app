@@ -1,4 +1,4 @@
-import { IGraph } from '../providers/GraphProvider';
+import IGraph from '../types/IGraph';
 import ILink from '../types/ILink';
 import AbstractCommand from './AbstractCommand';
 

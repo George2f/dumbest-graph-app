@@ -1,5 +1,5 @@
-import { IGraph } from '../providers/GraphProvider';
 import IComment from '../types/IComment';
+import IGraph from '../types/IGraph';
 import AbstractCommand from './AbstractCommand';
 
 export default class DeleteCommentCommand extends AbstractCommand {

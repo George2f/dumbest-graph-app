@@ -1,20 +1,8 @@
 import React, { createContext } from 'react';
 import AbstractCommand from '../../Command/AbstractCommand';
+import IHistory from '../../types/IHistory';
 
-interface IHistoryContextValue {
-    getIndex: () => number;
-    getLength: () => number;
-    undo: () => void;
-    redo: () => void;
-    clear: () => void;
-    push: (command: AbstractCommand) => void;
-    getUndoInfo: () => string;
-    getRedoInfo: () => string;
-}
-
-const HistoryContext = createContext<IHistoryContextValue>(
-    {} as IHistoryContextValue
-);
+const HistoryContext = createContext<IHistory>({} as IHistory);
 
 interface IHistoryProviderProps {
     children: React.ReactNode;

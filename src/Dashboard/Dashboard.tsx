@@ -3,19 +3,18 @@ import { useGraph } from '../providers/GraphProvider';
 import INode from '../types/INode';
 import ILink from '../types/ILink';
 import IComment from '../types/IComment';
-import LINK_TYPE_ENUM from '../types/LinkTypeEnum';
 import generateLinkName from '../utils/parseLinkName';
 import LinkListItem from './components/LinkListItem';
 import { useHistory } from '../providers/HistoryProvider';
 import AddCommentCommand from '../Command/AddCommentCommand';
 import DeleteCommentCommand from '../Command/DeleteCommentCommand';
 import EditCommentCommand from '../Command/EditCommentCommand';
-import AddLinkCommand from '../Command/AddLinkCommand';
 import DeleteLinkCommand from '../Command/DeleteLinkCommand';
 import EditLinkCommand from '../Command/EditLinkCommand';
 import AddNodeCommand from '../Command/AddNodeCommand';
 import EditNodeCommand from '../Command/EditNodeCommand';
 import DeleteNodeCommand from '../Command/DeleteNodeCommand';
+import NewLinkModule from './components/NewLinkModule';
 
 export default function Dashboard() {
     const graph = useGraph();
@@ -36,13 +35,6 @@ export default function Dashboard() {
         null
     );
     const [editCommentText, setEditCommentText] = React.useState<string>('');
-
-    const [newLinkName, setNewLinkName] = React.useState<string>('');
-    const [newLinkType, setNewLinkType] = React.useState<LINK_TYPE_ENUM>(
-        LINK_TYPE_ENUM.SIMPLE
-    );
-    const [newLinkNode1, setNewLinkNode1] = React.useState<INode | null>(null);
-    const [newLinkNode2, setNewLinkNode2] = React.useState<INode | null>(null);
 
     const { nodes, links, comments, getNewId } = graph;
 
@@ -126,13 +118,12 @@ export default function Dashboard() {
                                 </>
                             ) : (
                                 <>
-                                    {node.id}{' '}
                                     <button
                                         onClick={() => {
                                             setWorkingNode(node);
                                             setEditNodeName(node.name);
                                         }}>
-                                        {node.name}
+                                        {node.id} {node.name}
                                     </button>
                                 </>
                             )}
@@ -154,100 +145,7 @@ export default function Dashboard() {
             </section>
             <section>
                 <h2>Links</h2>
-                <h3>New Link</h3>
-                <h4>Choose a node</h4>
-                <select
-                    onChange={(event) => {
-                        setNewLinkNode1(
-                            nodes.find(
-                                (node) =>
-                                    node.id.toString() === event.target.value
-                            ) || null
-                        );
-                    }}
-                    value={newLinkNode1?.id || 0}>
-                    <option value={0}>--</option>
-                    {nodes.map((node) => (
-                        <option key={node.id} value={node.id}>
-                            {node.name}
-                        </option>
-                    ))}
-                </select>
-                <h4>And another one</h4>
-                <select
-                    onChange={(event) => {
-                        setNewLinkNode2(
-                            nodes.find(
-                                (node) =>
-                                    node.id.toString() === event.target.value
-                            ) || null
-                        );
-                    }}
-                    value={newLinkNode2?.id || 0}>
-                    <option value={0}>--</option>
-                    {nodes.map((node) => (
-                        <option key={node.id} value={node.id}>
-                            {node.name}
-                        </option>
-                    ))}
-                </select>
-                <h4>How do they relate</h4>
-                <select
-                    onChange={(event) => {
-                        setNewLinkType(
-                            event.target.value as unknown as LINK_TYPE_ENUM
-                        );
-                    }}
-                    value={newLinkType}>
-                    <option value={LINK_TYPE_ENUM.SIMPLE}>Simple</option>
-                    <option value={LINK_TYPE_ENUM.A_TO_B}>A to B</option>
-                    <option value={LINK_TYPE_ENUM.BOTH_WAYS}>Both Ways</option>
-                </select>
-                <h4>
-                    What do you call this relationship? (e.g. "is a friend")
-                </h4>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        if (!newLinkNode1 || !newLinkNode2) return;
-
-                        const command = new AddLinkCommand(
-                            {
-                                id: getNewId(),
-                                node1Id: newLinkNode1.id,
-                                node2Id: newLinkNode2.id,
-                                type: newLinkType,
-                                name: newLinkName,
-                            },
-                            graph
-                        );
-
-                        command.execute();
-                        history.push(command);
-
-                        setNewLinkName('');
-                        setNewLinkNode1(null);
-                        setNewLinkNode2(null);
-                        setNewLinkType(LINK_TYPE_ENUM.SIMPLE);
-                    }}>
-                    <div>
-                        {newLinkNode1?.name}
-                        {newLinkType === LINK_TYPE_ENUM.BOTH_WAYS
-                            ? ' <='
-                            : ' =='}
-                        <input
-                            type="text"
-                            value={newLinkName}
-                            onChange={(event) =>
-                                setNewLinkName(event.target.value)
-                            }
-                        />
-                        {newLinkType === LINK_TYPE_ENUM.SIMPLE ? '== ' : '=> '}
-
-                        {newLinkNode2?.name}
-                    </div>
-                    <button type="submit">Add Link</button>
-                </form>
+                <NewLinkModule graph={graph} history={history} />
                 <h3>Edit Link</h3>
                 <ul>
                     {links.map((link) => (
