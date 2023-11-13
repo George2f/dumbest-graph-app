@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import ILink from '../../../types/ILink';
-import generateLinkName from '../../../utils/parseLinkName';
-import INode from '../../../types/INode';
+import ILink from '../../../../../types/ILink';
+import generateLinkName from '../../../../../utils/parseLinkName';
+import INode from '../../../../../types/INode';
 import EditLinkModule from '../EditLinkModule';
 
 interface ILinkListItemProps {
     link: ILink;
     onDelete: () => void;
-    onChange: (id: number, link: ILink) => void;
+    onChange: (link: ILink) => void;
     nodes: INode[];
 }
 
@@ -23,8 +23,8 @@ export default function LinkListItem({
             {active ? (
                 <EditLinkModule
                     link={link}
-                    onChange={(id, link) => {
-                        onChange(id, link);
+                    onChange={(link) => {
+                        onChange(link);
                         setActive(false);
                     }}
                     nodes={nodes}

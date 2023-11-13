@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import LINK_TYPE_ENUM from '../../../types/LinkTypeEnum';
-import ILink from '../../../types/ILink';
-import INode from '../../../types/INode';
+import LINK_TYPE_ENUM from '../../../../../types/LinkTypeEnum';
+import ILink from '../../../../../types/ILink';
+import INode from '../../../../../types/INode';
 
 interface IEditLinkModuleProps {
     link: ILink;
-    onChange: (id: number, link: ILink) => void;
+    onChange: (link: ILink) => void;
     nodes: INode[];
     active: boolean;
 }
@@ -30,7 +30,7 @@ export default function EditLinkModule({
             onSubmit={(e) => {
                 e.preventDefault();
                 if (!link || !editNode1Id || !editNode2Id) return;
-                onChange(link.id, {
+                onChange({
                     ...link,
                     node1Id: Number(editNode1Id),
                     node2Id: Number(editNode2Id),

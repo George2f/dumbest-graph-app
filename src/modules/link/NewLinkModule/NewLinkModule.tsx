@@ -2,15 +2,13 @@ import React from 'react';
 import INode from '../../../types/INode';
 import LINK_TYPE_ENUM from '../../../types/LinkTypeEnum';
 import AddLinkCommand from '../../../Command/AddLinkCommand';
-import IGraph from '../../../types/IGraph';
-import IHistory from '../../../types/IHistory';
+import { useGraph } from '../../../providers/GraphProvider';
+import { useHistory } from '../../../providers/HistoryProvider';
 
-interface INewLinkModuleProps {
-    graph: IGraph;
-    history: IHistory;
-}
+export default function NewLinkModule() {
+    const graph = useGraph();
+    const history = useHistory();
 
-export default function NewLinkModule({ graph, history }: INewLinkModuleProps) {
     const [newLinkName, setNewLinkName] = React.useState<string>('');
     const [newLinkType, setNewLinkType] = React.useState<LINK_TYPE_ENUM>(
         LINK_TYPE_ENUM.SIMPLE

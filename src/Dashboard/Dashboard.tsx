@@ -4,17 +4,15 @@ import INode from '../types/INode';
 import ILink from '../types/ILink';
 import IComment from '../types/IComment';
 import generateLinkName from '../utils/parseLinkName';
-import LinkListItem from './components/LinkListItem';
 import { useHistory } from '../providers/HistoryProvider';
 import AddCommentCommand from '../Command/AddCommentCommand';
 import DeleteCommentCommand from '../Command/DeleteCommentCommand';
 import EditCommentCommand from '../Command/EditCommentCommand';
-import DeleteLinkCommand from '../Command/DeleteLinkCommand';
-import EditLinkCommand from '../Command/EditLinkCommand';
 import AddNodeCommand from '../Command/AddNodeCommand';
 import EditNodeCommand from '../Command/EditNodeCommand';
 import DeleteNodeCommand from '../Command/DeleteNodeCommand';
-import NewLinkModule from './components/NewLinkModule';
+import NewLinkModule from '../modules/link/NewLinkModule';
+import LinkListModule from '../modules/link/LinkListModule';
 
 export default function Dashboard() {
     const graph = useGraph();
@@ -145,35 +143,8 @@ export default function Dashboard() {
             </section>
             <section>
                 <h2>Links</h2>
-                <NewLinkModule graph={graph} history={history} />
-                <h3>Edit Link</h3>
-                <ul>
-                    {links.map((link) => (
-                        <LinkListItem
-                            link={link}
-                            key={link.id}
-                            onDelete={() => {
-                                const command = new DeleteLinkCommand(
-                                    link,
-                                    graph
-                                );
-
-                                command.execute();
-                                history.push(command);
-                            }}
-                            onChange={(id, link) => {
-                                const command = new EditLinkCommand(
-                                    link,
-                                    graph
-                                );
-
-                                command.execute();
-                                history.push(command);
-                            }}
-                            nodes={nodes}
-                        />
-                    ))}
-                </ul>
+                <NewLinkModule />
+                <LinkListModule />
             </section>
             <section>
                 <h2>Comments</h2>
