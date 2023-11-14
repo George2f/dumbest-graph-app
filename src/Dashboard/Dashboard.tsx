@@ -28,7 +28,7 @@ export default function Dashboard() {
             <section>
                 <h2>Comments</h2>
                 <NewCommentModule />
-                <CommentListModule />Ì
+                <CommentListModule />
             </section>
         </main>
     );

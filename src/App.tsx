@@ -1,46 +1,10 @@
 import { useState } from 'react';
 import Dashboard from './Dashboard';
 import Graph from './Graph';
-import { useGraph } from './providers/GraphProvider';
-import { useHistory } from './providers/HistoryProvider';
+import HeaderModule from './modules/HeaderModule';
 
 export default function App() {
-    const { initGraph, clearGraph, nodes, links, comments } = useGraph();
-    const history = useHistory();
     const [route, setRoute] = useState<string>('dashboard');
-
-    const [exportFileName, setExportFileName] = useState<string>('dga-data');
-
-    const handleExport = (e) => {
-        e.preventDefault();
-        if (!exportFileName) return;
-        const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-            JSON.stringify({
-                nodes,
-                links,
-                comments,
-            })
-        )}`;
-        const link = document.createElement('a');
-        link.href = jsonString;
-        link.download = `${exportFileName}.json`;
-
-        link.click();
-    };
-
-    history.getLength() - history.getIndex() > 0 || history.getLength() === 0;
-    console.log(
-        '🚀 : file: App.tsx:33 : history.getLength() === 0:',
-        history.getLength() === 0
-    );
-    console.log(
-        '🚀 : file: App.tsx:32 : history.getIndex() > 0:',
-        history.getIndex() > 0
-    );
-    console.log(
-        '🚀 : file: App.tsx:32 : history.getLength():',
-        history.getLength()
-    );
 
     return (
         <div
@@ -51,92 +15,12 @@ export default function App() {
                 color: 'darkslategray',
             }}>
             <header>
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                    }}>
-                    <h1>
-                        DGA - Dumbest Graph App{' '}
-                        <button
-                            onClick={() => {
-                                const fileInput =
-                                    document.createElement('input');
-                                fileInput.type = 'file';
-                                fileInput.accept = 'application/json';
-                                fileInput.onchange = (e) => {
-                                    const files = (e.target as HTMLInputElement)
-                                        .files;
-                                    if (!files || !files[0]) return;
-                                    setExportFileName(
-                                        files[0].name.split('.')[0]
-                                    );
-                                    const reader = new FileReader();
-                                    reader.onload = (e) => {
-                                        if (!e.target || !e.target.result)
-                                            return;
-                                        const data = JSON.parse(
-                                            e.target.result as string
-                                        );
-                                        initGraph(data);
-                                    };
-                                    reader.readAsText(files[0]);
-                                };
-                                fileInput.click();
-                            }}>
-                            Import
-                        </button>
-                        <form
-                            style={{ display: 'inline' }}
-                            onSubmit={handleExport}>
-                            <button type="submit">Export</button>
-                            <input
-                                value={exportFileName}
-                                onChange={(e) =>
-                                    setExportFileName(e.target.value)
-                                }
-                                type="text"
-                            />
-                        </form>
-                    </h1>
-                    <div>
-                        <div>Nodes: {nodes.length}</div>
-                        <div>Links: {links.length}</div>
-                        <div>Comments: {comments.length}</div>
-                    </div>
-                </div>
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                    }}>
-                    <div>
-                        <button onClick={() => setRoute('dashboard')}>
-                            Dashboard
-                        </button>
-                        <button onClick={() => setRoute('graph')}>Graph</button>
-                        <button
-                            onClick={history.undo}
-                            disabled={history.getIndex() < 0}>
-                            Undo {history.getUndoInfo()}
-                        </button>
-                        <button
-                            onClick={history.redo}
-                            disabled={
-                                history.getIndex() ===
-                                    history.getLength() - 1 ||
-                                history.getLength() === 0
-                            }>
-                            Redo {history.getRedoInfo()}
-                        </button>
-                    </div>
-                    <button
-                        onClick={(e) => {
-                            handleExport(e);
-                            clearGraph();
-                        }}>
-                        Export and clear
+                <HeaderModule />
+                <div>
+                    <button onClick={() => setRoute('dashboard')}>
+                        Dashboard
                     </button>
+                    <button onClick={() => setRoute('graph')}>Graph</button>
                 </div>
             </header>
             {route === 'dashboard' ? <Dashboard /> : null}
