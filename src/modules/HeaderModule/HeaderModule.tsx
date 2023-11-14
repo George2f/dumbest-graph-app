@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useGraph } from '../../providers/GraphProvider';
 import { useHistory } from '../../providers/HistoryProvider';
+import { useNavigate } from 'react-router-dom';
 
 export default function HeaderModule() {
     const graph = useGraph();
     const history = useHistory();
+    const navigate = useNavigate();
 
     const [exportFileName, setExportFileName] = useState<string>('dga-data');
 
@@ -100,6 +102,12 @@ export default function HeaderModule() {
                         Redo {history.getRedoInfo()}
                     </button>
                 </div>
+            </div>
+            <div>
+                <button onClick={() => navigate('./dashboard')}>
+                    Dashboard
+                </button>
+                <button onClick={() => navigate('./graph')}>Graph</button>
             </div>
         </>
     );

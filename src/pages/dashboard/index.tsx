@@ -1,9 +1,9 @@
-import NewLinkModule from '../modules/link/NewLinkModule';
-import LinkListModule from '../modules/link/LinkListModule';
-import NewNodeModule from '../modules/node/NewNodeModule';
-import NodeListModule from '../modules/node/NodeListModule';
-import NewCommentModule from '../modules/comment/NewCommentModule';
-import CommentListModule from '../modules/comment/CommentListModule';
+import NewLinkModule from '../../modules/link/NewLinkModule';
+import LinkListModule from '../../modules/link/LinkListModule';
+import NewNodeModule from '../../modules/node/NewNodeModule';
+import NodeListModule from '../../modules/node/NodeListModule';
+import NewCommentModule from '../../modules/comment/NewCommentModule';
+import CommentListModule from '../../modules/comment/CommentListModule';
 
 export default function Dashboard() {
     return (

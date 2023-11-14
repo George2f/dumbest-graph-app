@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import Dashboard from './Dashboard';
-import Graph from './Graph';
-import HeaderModule from './modules/HeaderModule';
+import Dashboard from './pages/dashboard';
+import Graph from './pages/graph';
+import Root from './pages';
+import {
+    Navigate,
+    Outlet,
+    Route,
+    RouterProvider,
+    createBrowserRouter,
+    createRoutesFromElements,
+} from 'react-router-dom';
+
+const router = createBrowserRouter(
+    createRoutesFromElements(
+        <Route
+            path="*"
+            element={
+                <Root>
+                    <Outlet />
+                </Root>
+            }>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="graph" element={<Graph />} />
+            <Route path="*" element={<Navigate to="dashboard" />} />
+        </Route>
+    )
+);
 
 export default function App() {
-    const [route, setRoute] = useState<string>('dashboard');
-
-    return (
-        <div
-            style={{
-                display: 'grid',
-                gridTemplateRows: 'auto 1fr auto',
-                height: 'calc(100vh - 16px)',
-                color: 'darkslategray',
-            }}>
-            <header>
-                <HeaderModule />
-                <div>
-                    <button onClick={() => setRoute('dashboard')}>
-                        Dashboard
-                    </button>
-                    <button onClick={() => setRoute('graph')}>Graph</button>
-                </div>
-            </header>
-            {route === 'dashboard' ? <Dashboard /> : null}
-            {route === 'graph' ? <Graph /> : null}
-            <footer></footer>
-        </div>
-    );
+    return <RouterProvider router={router} />;
 }

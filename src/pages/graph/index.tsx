@@ -1,4 +1,4 @@
-import GraphModule from '../modules/GraphModule';
+import GraphModule from '../../modules/GraphModule';
 
 export default function Graph() {
     return (
