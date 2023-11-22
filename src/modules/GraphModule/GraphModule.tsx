@@ -5,7 +5,7 @@ import { useGraph } from '../../providers/GraphProvider';
 import { useMemo } from 'react';
 
 export default function GraphModule() {
-    const { nodes, links, comments } = useGraph();
+    const { nodes, links, comments, getTag } = useGraph();
 
     const graphData = useMemo(() => {
         const linkPairs: number[][] = [];
@@ -16,7 +16,7 @@ export default function GraphModule() {
                     label: node.name,
                     x: 0,
                     y: 0,
-                    group: (Math.random() * 10).toString(),
+                    group: node.tags?.[0] || (Math.random() * -100).toString(),
                     name:
                         comments.find((c) => c.targetId === node.id)?.text ||
                         '',
@@ -76,9 +76,9 @@ export default function GraphModule() {
     return (
         <ForceGraph2D
             height={window.innerHeight - 250}
+            width={window.innerWidth - 250}
             backgroundColor="white"
             graphData={graphData}
-            nodeAutoColorBy="group"
             nodeCanvasObject={(node, ctx) => {
                 const label = node.label;
                 const fontSize = 3;
@@ -98,7 +98,7 @@ export default function GraphModule() {
 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillStyle = node.color;
+                ctx.fillStyle = getTag(node.group)?.color || '#000';
                 ctx.fillText(label, node.x!, node.y!);
 
                 node.__bckgDimensions = bckgDimensions; // to re-use in nodePointerAreaPaint

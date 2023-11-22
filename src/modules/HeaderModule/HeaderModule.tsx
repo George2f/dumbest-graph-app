@@ -80,6 +80,7 @@ export default function HeaderModule() {
                     <div>Nodes: {graph.nodes.length}</div>
                     <div>Links: {graph.links.length}</div>
                     <div>Comments: {graph.comments.length}</div>
+                    <div>Tags: {graph.tags.length}</div>
                 </div>
             </div>
             <div

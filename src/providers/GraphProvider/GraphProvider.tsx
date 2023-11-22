@@ -4,6 +4,7 @@ import ILink from '../../types/ILink';
 import IComment from '../../types/IComment';
 import IdType from '../../types/IdType';
 import IGraph from '../../types/IGraph';
+import ITag from '../../types/ITag';
 
 const GraphContext = React.createContext<IGraph>({} as IGraph);
 
@@ -17,27 +18,32 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
     const [nodes, setNodes] = React.useState<INode[]>([]);
     const [links, setLinks] = React.useState<ILink[]>([]);
     const [comments, setComments] = React.useState<IComment[]>([]);
+    const [tags, setTags] = React.useState<ITag[]>([]);
 
     const initGraph = React.useCallback(
         ({
             nodes,
             links,
             comments,
+            tags,
         }: {
             nodes: INode[];
             links: ILink[];
             comments: IComment[];
+            tags: ITag[];
         }) => {
             const lastId = Math.max(
                 0,
                 ...nodes.map((node) => node.id),
                 ...links.map((link) => link.id),
-                ...comments.map((comment) => comment.id)
+                ...comments.map((comment) => comment.id),
+                ...tags.map((tag) => tag.id)
             );
             setNextId(lastId + 1);
             setNodes(nodes);
             setLinks(links);
             setComments(comments);
+            setTags(tags);
         },
         []
     );
@@ -45,11 +51,12 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
     useEffect(() => {
         const graph = localStorage.getItem('graph');
         if (graph) {
-            const { nodes, links, comments } = JSON.parse(graph);
+            const { nodes, links, comments, tags } = JSON.parse(graph);
             initGraph({
                 nodes: nodes || [],
                 links: links || [],
                 comments: comments || [],
+                tags: tags || [],
             });
         }
         setInitialized(true);
@@ -59,14 +66,15 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         if (!initialized) return;
         localStorage.setItem(
             'graph',
-            JSON.stringify({ nodes, links, comments })
+            JSON.stringify({ nodes, links, comments, tags })
         );
-    }, [nodes, links, comments, initialized]);
+    }, [nodes, links, comments, initialized, tags]);
 
     const clearGraph = React.useCallback(() => {
         setNodes([]);
         setLinks([]);
         setComments([]);
+        setTags([]);
     }, []);
 
     const getNewId = React.useCallback(() => {
@@ -158,6 +166,32 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         );
     }, []);
 
+    const handleAddTag = React.useCallback((tag: ITag) => {
+        setTags((prevTags) => [...prevTags, tag]);
+    }, []);
+
+    const handleDeleteTag = React.useCallback(
+        (id: IdType) => {
+            setTags((prevTags) => prevTags.filter((tag) => tag.id !== id));
+
+            nodes.forEach((node) => {
+                if (node.tags.includes(id)) {
+                    handleEditNode(node.id, {
+                        ...node,
+                        tags: node.tags.filter((tagId) => tagId !== id),
+                    });
+                }
+            });
+        },
+        [tags]
+    );
+
+    const handleEditTag = React.useCallback((id: IdType, tag: ITag) => {
+        setTags((prevTags) =>
+            prevTags.map((prevTag) => (prevTag.id === id ? tag : prevTag))
+        );
+    }, []);
+
     const getNode = React.useCallback(
         (id: IdType) => nodes.find((node) => node.id === id),
         [nodes]
@@ -173,6 +207,11 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         [comments]
     );
 
+    const getTag = React.useCallback(
+        (id: IdType) => tags.find((tag) => tag.id === id),
+        [tags]
+    );
+
     return (
         <GraphContext.Provider
             value={{
@@ -180,6 +219,7 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 nodes,
                 links,
                 comments,
+                tags,
                 initGraph,
                 clearGraph,
                 addNode: handleAddNode,
@@ -191,9 +231,13 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 editComment: handleEditComment,
                 editLink: handleEditLink,
                 editNode: handleEditNode,
+                addTag: handleAddTag,
+                deleteTag: handleDeleteTag,
+                editTag: handleEditTag,
                 getNode,
                 getLink,
                 getComment,
+                getTag,
             }}>
             {children}
         </GraphContext.Provider>

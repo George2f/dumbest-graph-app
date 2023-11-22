@@ -17,24 +17,24 @@ export default function LinkListItem({
     onChange,
     nodes,
 }: ILinkListItemProps) {
-    const [active, setActive] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     return (
         <li key={link.id}>
-            {active ? (
+            {isEditing ? (
                 <EditLink
                     link={link}
                     onChange={(link) => {
                         onChange(link);
-                        setActive(false);
+                        setIsEditing(false);
                     }}
                     nodes={nodes}
-                    active={active}
+                    active={isEditing}
                 />
             ) : (
                 <>
                     <button
                         onClick={() => {
-                            setActive(true);
+                            setIsEditing(true);
                         }}>
                         {link.id}{' '}
                         {generateLinkName(
