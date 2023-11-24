@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGraph } from '../../../providers/GraphProvider';
 import { useHistory } from '../../../providers/HistoryProvider';
 import AddTagCommand from '../../../Command/AddTagCommand';
+import Button from '../../../components/Button';
 
 export default function NewTagModule() {
     const graph = useGraph();
@@ -14,6 +15,7 @@ export default function NewTagModule() {
         <form
             onSubmit={(e) => {
                 e.preventDefault();
+                if (!name) return;
                 const command = new AddTagCommand(
                     {
                         id: graph.getNewId(),
@@ -31,7 +33,7 @@ export default function NewTagModule() {
             <h3>New Tag</h3>
             <div>
                 <label>
-                    <h4>Tag Name</h4>
+                    Name:
                     <input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
@@ -40,14 +42,16 @@ export default function NewTagModule() {
             </div>
             <div>
                 <label>
-                    <h4>Tag Color</h4>
+                    Color:
                     <input
                         value={color}
                         onChange={(e) => setColor(e.target.value)}
                     />
                 </label>
             </div>
-            <button type="submit">Add Tag</button>
+            <div>
+                <Button type="submit">Add Tag</Button>
+            </div>
         </form>
     );
 }

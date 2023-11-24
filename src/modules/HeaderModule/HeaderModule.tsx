@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useGraph } from '../../providers/GraphProvider';
 import { useHistory } from '../../providers/HistoryProvider';
 import { useNavigate } from 'react-router-dom';
+import Button from '../../components/Button';
+import Input from '../../components/Input';
 
 export default function HeaderModule() {
     const graph = useGraph();
@@ -18,6 +20,7 @@ export default function HeaderModule() {
                 nodes: graph.nodes,
                 links: graph.links,
                 comments: graph.comments,
+                tags: graph.tags,
             })
         )}`;
         const link = document.createElement('a');
@@ -34,9 +37,11 @@ export default function HeaderModule() {
                     display: 'flex',
                     justifyContent: 'space-between',
                 }}>
-                <h1>
-                    DGA - Dumbest Graph App{' '}
-                    <button
+                <div>
+                    <h1 className="text-3xl font-bold inline-block pr-1">
+                        DGA - Dumbest Graph App{' '}
+                    </h1>
+                    <Button
                         onClick={() => {
                             const fileInput = document.createElement('input');
                             fileInput.type = 'file';
@@ -59,23 +64,24 @@ export default function HeaderModule() {
                             fileInput.click();
                         }}>
                         Import
-                    </button>
+                    </Button>
                     <form style={{ display: 'inline' }} onSubmit={handleExport}>
-                        <button type="submit">Export</button>
-                        <input
+                        <Button type="submit">Export</Button>
+                        <Input
                             value={exportFileName}
                             onChange={(e) => setExportFileName(e.target.value)}
                             type="text"
                         />
                     </form>
-                    <button
+                    <Button
                         onClick={(e) => {
                             handleExport(e);
                             graph.clearGraph();
                         }}>
                         Export and clear
-                    </button>
-                </h1>
+                    </Button>
+                </div>
+
                 <div>
                     <div>Nodes: {graph.nodes.length}</div>
                     <div>Links: {graph.links.length}</div>
@@ -89,26 +95,26 @@ export default function HeaderModule() {
                     justifyContent: 'space-between',
                 }}>
                 <div>
-                    <button
+                    <Button
                         onClick={history.undo}
                         disabled={history.getIndex() < 0}>
                         Undo {history.getUndoInfo()}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         onClick={history.redo}
                         disabled={
                             history.getIndex() === history.getLength() - 1 ||
                             history.getLength() === 0
                         }>
                         Redo {history.getRedoInfo()}
-                    </button>
+                    </Button>
                 </div>
             </div>
             <div>
-                <button onClick={() => navigate('./dashboard')}>
+                <Button onClick={() => navigate('./dashboard')}>
                     Dashboard
-                </button>
-                <button onClick={() => navigate('./graph')}>Graph</button>
+                </Button>
+                <Button onClick={() => navigate('./graph')}>Graph</Button>
             </div>
         </>
     );

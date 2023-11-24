@@ -5,6 +5,7 @@ import INode from '../../../types/INode';
 import ILink from '../../../types/ILink';
 import generateLinkName from '../../../utils/parseLinkName';
 import AddCommentCommand from '../../../Command/AddCommentCommand';
+import Button from '../../../components/Button';
 
 export default function NewCommentModule() {
     const graph = useGraph();
@@ -105,7 +106,7 @@ export default function NewCommentModule() {
                                     setNewCommentText(event.target.value)
                                 }
                             />
-                            <button type="submit">Save Comment</button>
+                            <Button type="submit">Save Comment</Button>
                         </label>
                     </form>
                 </label>

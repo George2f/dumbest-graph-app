@@ -3,6 +3,7 @@ import ILink from '../../../../../types/ILink';
 import generateLinkName from '../../../../../utils/parseLinkName';
 import INode from '../../../../../types/INode';
 import EditLink from '../EditLink';
+import Button from '../../../../../components/Button';
 
 interface ILinkListItemProps {
     link: ILink;
@@ -46,7 +47,7 @@ export default function LinkListItem({
                     </button>
                 </>
             )}
-            <button onClick={onDelete}>Delete</button>
+            <Button onClick={onDelete}>Delete</Button>
         </li>
     );
 }

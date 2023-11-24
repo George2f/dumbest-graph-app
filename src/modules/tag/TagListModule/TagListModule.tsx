@@ -11,7 +11,7 @@ export default function TagListModule() {
     return (
         <>
             <h3>Tags</h3>
-            <ul>
+            <ul className="flex flex-wrap gap-1.5">
                 {graph.tags.map((tag) => (
                     <TagListItem
                         key={tag.id}

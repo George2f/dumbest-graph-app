@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import IGraph from '../../../../types/IGraph';
 import INode from '../../../../types/INode';
 import TagPill from '../../../../components/TagPill';
+import Button from '../../../../components/Button';
 
 interface INodeListItemProps {
     node: INode;
@@ -21,6 +22,12 @@ export default function NodeListItem({
     const [editNodeTags, setEditNodeTags] = useState(node.tags || []);
     const [editNodeName, setEditNodeName] = useState(node.name);
     const [selectedNewTag, setSelectedNewTag] = useState<string>('');
+
+    console.log(
+        '🚀 : file: NodeListItem.tsx:94 : editNodeTags:',
+        node.id,
+        editNodeTags
+    );
 
     return (
         <li>
@@ -63,7 +70,7 @@ export default function NodeListItem({
                                         ))}
                                     <option value={''}>-</option>
                                 </select>
-                                <button
+                                <Button
                                     onClick={(e) => {
                                         e.preventDefault();
                                         if (!selectedNewTag) return;
@@ -74,44 +81,49 @@ export default function NodeListItem({
                                         setSelectedNewTag('');
                                     }}>
                                     AddTag
-                                </button>
+                                </Button>
                             </div>
-                            {editNodeTags.map((tagId) => (
-                                <div>
-                                    <TagPill tag={graph.getTag(tagId)!} />
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
+                            <div className="flex flex-row flex-wrap gap-1.5">
+                                {editNodeTags.map((tagId) => (
+                                    <TagPill
+                                        key={tagId}
+                                        tag={graph.getTag(tagId)!}
+                                        onDelete={() => {
                                             setEditNodeTags(
                                                 editNodeTags.filter(
                                                     (tag) => tag !== tagId
                                                 )
                                             );
-                                        }}>
-                                        Remove
-                                    </button>
-                                </div>
-                            ))}
+                                        }}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                        <button type="submit">Save</button>
+                        <Button type="submit">Save</Button>
+                        <Button
+                            onClick={() => {
+                                onDelete(node);
+                            }}>
+                            Delete
+                        </Button>
                     </form>
                 </>
             ) : (
                 <>
-                    <button
+                    <Button
                         onClick={() => {
                             setIsEditing(true);
                         }}>
                         {node.id} {node.name}
-                    </button>
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            onDelete(node);
+                        }}>
+                        Delete
+                    </Button>
                 </>
             )}
-            <button
-                onClick={() => {
-                    onDelete(node);
-                }}>
-                Delete
-            </button>
         </li>
     );
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGraph } from '../../../providers/GraphProvider';
 import { useHistory } from '../../../providers/HistoryProvider';
 import AddNodeCommand from '../../../Command/AddNodeCommand';
+import Button from '../../../components/Button';
 
 export default function NewNodeModule() {
     const graph = useGraph();
@@ -20,6 +21,7 @@ export default function NewNodeModule() {
                         {
                             id: graph.getNewId(),
                             name: newNodeName,
+                            tags: [],
                         },
                         graph
                     );
@@ -36,7 +38,9 @@ export default function NewNodeModule() {
                         onChange={(event) => setNewNodeName(event.target.value)}
                     />
                 </label>
-                <button type="submit">Add Node</button>
+                <div>
+                    <Button type="submit">Add Node</Button>
+                </div>
             </form>
         </>
     );

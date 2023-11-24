@@ -22,10 +22,10 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
 
     const initGraph = React.useCallback(
         ({
-            nodes,
-            links,
-            comments,
-            tags,
+            nodes = [],
+            links = [],
+            comments = [],
+            tags = [],
         }: {
             nodes: INode[];
             links: ILink[];

@@ -4,6 +4,7 @@ import LINK_TYPE_ENUM from '../../../types/LinkTypeEnum';
 import AddLinkCommand from '../../../Command/AddLinkCommand';
 import { useGraph } from '../../../providers/GraphProvider';
 import { useHistory } from '../../../providers/HistoryProvider';
+import Button from '../../../components/Button';
 
 export default function NewLinkModule() {
     const graph = useGraph();
@@ -102,7 +103,7 @@ export default function NewLinkModule() {
 
                     {newLinkNode2?.name}
                 </div>
-                <button type="submit">Add Link</button>
+                <Button type="submit">Add Link</Button>
             </form>
         </>
     );
