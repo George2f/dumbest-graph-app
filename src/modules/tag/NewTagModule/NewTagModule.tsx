@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useGraph } from '../../../providers/GraphProvider';
 import { useHistory } from '../../../providers/HistoryProvider';
 import AddTagCommand from '../../../Command/AddTagCommand';
 import Button from '../../../components/Button';
+import Modal from '../../../components/Modal';
 
 export default function NewTagModule() {
     const graph = useGraph();
@@ -10,48 +11,65 @@ export default function NewTagModule() {
 
     const [name, setName] = useState('');
     const [color, setColor] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+    const nameInputRef = useRef<HTMLInputElement>(null);
 
     return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault();
-                if (!name) return;
-                const command = new AddTagCommand(
-                    {
-                        id: graph.getNewId(),
-                        name,
-                        color,
-                    },
-                    graph
-                );
+        <>
+            <Button
+                onClick={() => {
+                    setModalVisible(true);
+                }}>
+                New Tag
+            </Button>
+            <Modal
+                isOpen={modalVisible}
+                onDismiss={() => setModalVisible(false)}>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        if (!name) return;
+                        const command = new AddTagCommand(
+                            {
+                                id: graph.getNewId(),
+                                name,
+                                color,
+                            },
+                            graph
+                        );
 
-                command.execute();
-                history.push(command);
-                setName('');
-                setColor('');
-            }}>
-            <h3>New Tag</h3>
-            <div>
-                <label>
-                    Name:
-                    <input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Color:
-                    <input
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                    />
-                </label>
-            </div>
-            <div>
-                <Button type="submit">Add Tag</Button>
-            </div>
-        </form>
+                        command.execute();
+                        history.push(command);
+                        setName('');
+                        setColor('');
+                        nameInputRef.current?.focus();
+                    }}>
+                    <h3>New Tag</h3>
+                    <div>
+                        <label>
+                            Name:
+                            <input
+                                autoFocus
+                                ref={nameInputRef}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Color:
+                            <input
+                                value={color}
+                                onChange={(e) => setColor(e.target.value)}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <Button type="submit">Add Tag</Button>
+                    </div>
+                </form>
+            </Modal>
+        </>
     );
 }

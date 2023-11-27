@@ -2,18 +2,21 @@ import { useState } from 'react';
 import LINK_TYPE_ENUM from '../../../../../types/LinkTypeEnum';
 import ILink from '../../../../../types/ILink';
 import INode from '../../../../../types/INode';
+import Button from '../../../../../components/Button';
 
 interface IEditLinkModuleProps {
     link: ILink;
     onChange: (link: ILink) => void;
     nodes: INode[];
     active: boolean;
+    onDelete: () => void;
 }
 
 export default function EditLinkModule({
     link,
     onChange,
     nodes,
+    onDelete,
 }: IEditLinkModuleProps) {
     const [editLinkName, setEditLinkName] = useState(link.name);
     const [editLinkType, setEditLinkType] = useState(link.type);
@@ -90,7 +93,10 @@ export default function EditLinkModule({
                 <option value={LINK_TYPE_ENUM.A_TO_B}>A to B</option>
                 <option value={LINK_TYPE_ENUM.BOTH_WAYS}>Both Ways</option>
             </select>
-            <button type="submit">Done</button>
+            <div>
+                <Button type="submit">Save</Button>
+                <Button onClick={onDelete}>Delete</Button>
+            </div>
         </form>
     );
 }

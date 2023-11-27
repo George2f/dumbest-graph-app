@@ -12,23 +12,30 @@ export default function LinkListModule() {
             <h3>Links</h3>
             <ul>
                 {graph.links.map((link) => (
-                    <LinkListItem
-                        link={link}
-                        key={link.id}
-                        onDelete={() => {
-                            const command = new DeleteLinkCommand(link, graph);
+                    <li key={link.id}>
+                        <LinkListItem
+                            link={link}
+                            onDelete={() => {
+                                const command = new DeleteLinkCommand(
+                                    link,
+                                    graph
+                                );
 
-                            command.execute();
-                            history.push(command);
-                        }}
-                        onChange={(link) => {
-                            const command = new EditLinkCommand(link, graph);
+                                command.execute();
+                                history.push(command);
+                            }}
+                            onChange={(link) => {
+                                const command = new EditLinkCommand(
+                                    link,
+                                    graph
+                                );
 
-                            command.execute();
-                            history.push(command);
-                        }}
-                        nodes={graph.nodes}
-                    />
+                                command.execute();
+                                history.push(command);
+                            }}
+                            nodes={graph.nodes}
+                        />
+                    </li>
                 ))}
             </ul>
         </>

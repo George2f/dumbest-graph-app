@@ -3,6 +3,7 @@ import ITag from '../../../../../types/ITag';
 import TagPill from '../../../../../components/TagPill';
 import Button from '../../../../../components/Button';
 import ColorSquare from '../../../../../components/ColorSquare';
+import Modal from '../../../../../components/Modal';
 
 interface ITagListItemProps {
     onChange: (tag: ITag) => void;
@@ -22,63 +23,60 @@ export default function TagListItem({
 
     return (
         <li>
-            {isEditing ? (
-                <div className="flex flex-col gap-1.5 bg-slate-200 p-1 shadow-2xl">
-                    <form
-                        className="rounded-md bg-white p-1.5 shadow-inner"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            setIsEditing(false);
+            <Modal isOpen={isEditing} onDismiss={() => setIsEditing(false)}>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        setIsEditing(false);
 
-                            onChange({
-                                ...tag,
-                                name: editTagName,
-                                color: editTagColor,
-                            });
-                        }}>
-                        <div>
-                            <label>
-                                Name:
-                                <input
-                                    type="text"
-                                    value={editTagName}
-                                    onChange={(event) =>
-                                        setEditTagName(event.target.value)
-                                    }
-                                />
-                            </label>
-                        </div>
-                        <div>
-                            <label>
-                                Color:
-                                <ColorSquare color={editTagColor} />
-                                <input
-                                    type="text"
-                                    value={editTagColor}
-                                    onChange={(event) =>
-                                        setEditTagColor(event.target.value)
-                                    }
-                                />
-                            </label>
-                        </div>
-                        <div>
-                            <Button type="submit">Save</Button>
-                            <Button
-                                onClick={() => {
-                                    onDelete(tag);
-                                }}>
-                                Delete
-                            </Button>
-                        </div>
-                    </form>
-                </div>
-            ) : (
-                <TagPill
-                    tag={tag}
-                    onDelete={() => onDelete(tag)}
-                    onEdit={() => setIsEditing(true)}
-                />
-            )}
+                        onChange({
+                            ...tag,
+                            name: editTagName,
+                            color: editTagColor,
+                        });
+                    }}>
+                    <div>
+                        <label>
+                            Name:
+                            <input
+                                type="text"
+                                value={editTagName}
+                                onChange={(event) =>
+                                    setEditTagName(event.target.value)
+                                }
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Color:
+                            <ColorSquare color={editTagColor} />
+                            <input
+                                type="text"
+                                value={editTagColor}
+                                onChange={(event) =>
+                                    setEditTagColor(event.target.value)
+                                }
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <Button type="submit">Save</Button>
+                        <Button
+                            onClick={() => {
+                                onDelete(tag);
+                            }}>
+                            Delete
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
+
+            <TagPill
+                tag={tag}
+                onDelete={() => onDelete(tag)}
+                onEdit={() => setIsEditing(true)}
+            />
         </li>
     );
 }

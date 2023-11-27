@@ -4,6 +4,7 @@ import generateLinkName from '../../../../../utils/parseLinkName';
 import INode from '../../../../../types/INode';
 import EditLink from '../EditLink';
 import Button from '../../../../../components/Button';
+import Modal from '../../../../../components/Modal';
 
 interface ILinkListItemProps {
     link: ILink;
@@ -18,36 +19,35 @@ export default function LinkListItem({
     onChange,
     nodes,
 }: ILinkListItemProps) {
-    const [isEditing, setIsEditing] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     return (
-        <li key={link.id}>
-            {isEditing ? (
+        <>
+            <Modal isOpen={isModalOpen} onDismiss={() => setIsModalOpen(false)}>
                 <EditLink
                     link={link}
                     onChange={(link) => {
                         onChange(link);
-                        setIsEditing(false);
+                        setIsModalOpen(false);
                     }}
+                    onDelete={onDelete}
                     nodes={nodes}
-                    active={isEditing}
+                    active={isModalOpen}
                 />
-            ) : (
-                <>
-                    <button
-                        onClick={() => {
-                            setIsEditing(true);
-                        }}>
-                        {link.id}{' '}
-                        {generateLinkName(
-                            link,
-                            nodes.find((n) => n.id === link.node1Id)?.name ||
-                                '',
-                            nodes.find((n) => n.id === link.node2Id)?.name || ''
-                        )}
-                    </button>
-                </>
-            )}
+            </Modal>
+            <>
+                <Button
+                    onClick={() => {
+                        setIsModalOpen(true);
+                    }}>
+                    {link.id}{' '}
+                    {generateLinkName(
+                        link,
+                        nodes.find((n) => n.id === link.node1Id)?.name || '',
+                        nodes.find((n) => n.id === link.node2Id)?.name || ''
+                    )}
+                </Button>
+            </>
             <Button onClick={onDelete}>Delete</Button>
-        </li>
+        </>
     );
 }

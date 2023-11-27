@@ -9,35 +9,25 @@ import TagListModule from '../../modules/tag/TagListModule';
 
 export default function Dashboard() {
     return (
-        <main
-            style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gridTemplateRows: '1fr 1fr',
-                overflow: 'auto',
-                borderBottom: '1px solid grey',
-                borderTop: '1px solid grey',
-            }}>
-            <section>
-                <h2>Nodes</h2>
-                <NewNodeModule />
-                <NodeListModule />
-            </section>
-            <section>
-                <h2>Links</h2>
-                <NewLinkModule />
-                <LinkListModule />
-            </section>
-            <section>
-                <h2>Comments</h2>
-                <NewCommentModule />
-                <CommentListModule />
-            </section>
-            <section>
-                <h2>Tags</h2>
-                <NewTagModule />
-                <TagListModule />
-            </section>
+        <main className="border-t-2 border-slate-400">
+            <NewNodeModule />
+            <NewLinkModule />
+            <NewCommentModule />
+            <NewTagModule />
+            <div className="grid grid-cols-2 grid-rows-2 overflow-auto">
+                <section>
+                    <NodeListModule />
+                </section>
+                <section>
+                    <LinkListModule />
+                </section>
+                <section>
+                    <CommentListModule />
+                </section>
+                <section>
+                    <TagListModule />
+                </section>
+            </div>
         </main>
     );
 }
