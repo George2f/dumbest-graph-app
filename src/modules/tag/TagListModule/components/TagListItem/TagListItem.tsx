@@ -39,6 +39,7 @@ export default function TagListItem({
                         <label>
                             Name:
                             <input
+                                autoFocus
                                 type="text"
                                 value={editTagName}
                                 onChange={(event) =>

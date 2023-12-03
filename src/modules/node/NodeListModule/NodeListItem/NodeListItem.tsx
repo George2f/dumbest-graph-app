@@ -4,6 +4,8 @@ import INode from '../../../../types/INode';
 import TagPill from '../../../../components/TagPill';
 import Button from '../../../../components/Button';
 import Modal from '../../../../components/Modal';
+import NewCommentModule from '../../../comment/NewCommentModule';
+import CommentListModule from '../../../comment/CommentListModule';
 
 interface INodeListItemProps {
     node: INode;
@@ -21,14 +23,21 @@ export default function NodeListItem({
     const [editNodeTags, setEditNodeTags] = useState(node.tags || []);
     const [editNodeName, setEditNodeName] = useState(node.name);
     const [selectedNewTag, setSelectedNewTag] = useState<string>('');
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isNodeModalOpen, setIsNodeModalOpen] = useState<boolean>(false);
+    const [isCommentListModalOpen, setIsCommentListModalOpen] =
+        useState<boolean>(false);
+    const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
+
+    const relatedComments = graph.comments.filter(
+        (comment) => comment.targetId === node.id
+    );
 
     return (
         <>
             <Modal
-                isOpen={isModalOpen}
+                isOpen={isNodeModalOpen}
                 onDismiss={() => {
-                    setIsModalOpen(false);
+                    setIsNodeModalOpen(false);
                     setEditNodeTags(node.tags || []);
                     setEditNodeName(node.name);
                 }}>
@@ -41,7 +50,7 @@ export default function NodeListItem({
                             name: editNodeName,
                             tags: editNodeTags,
                         });
-                        setIsModalOpen(false);
+                        setIsNodeModalOpen(false);
                     }}>
                     <label>
                         Name:
@@ -60,7 +69,9 @@ export default function NodeListItem({
                             {graph.tags
                                 .filter((tag) => !editNodeTags.includes(tag.id))
                                 .map((tag) => (
-                                    <option value={tag.id}>{tag.name}</option>
+                                    <option key={tag.id} value={tag.id}>
+                                        {tag.name}
+                                    </option>
                                 ))}
                             <option value={''}>-</option>
                         </select>
@@ -92,30 +103,75 @@ export default function NodeListItem({
                             />
                         ))}
                     </div>
-                    <Button type="submit">Save</Button>
+                    <div>
+                        Comments:
+                        {relatedComments.length ? (
+                            <Button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setIsCommentListModalOpen(true);
+                                }}>
+                                {relatedComments.length}
+                            </Button>
+                        ) : null}
+                        <Button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setIsNewCommentOpen(true);
+                            }}>
+                            Add
+                        </Button>
+                    </div>
+                    <div>
+                        <Button type="submit">Save</Button>
+                        <Button
+                            onClick={() => {
+                                onDelete(node);
+                            }}>
+                            Delete
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
+
+            <div className="my-2 rounded-r-xl bg-slate-200 p-2 pl-0">
+                <div className="rounded-r-lg bg-white p-1.5">
+                    <Button
+                        onClick={() => {
+                            setIsNodeModalOpen(true);
+                        }}>
+                        {node.id} {node.name}
+                    </Button>
                     <Button
                         onClick={() => {
                             onDelete(node);
                         }}>
                         Delete
                     </Button>
-                </form>
+                    <div>
+                        Comments:
+                        {relatedComments.length ? (
+                            <Button
+                                onClick={() => setIsCommentListModalOpen(true)}>
+                                {relatedComments.length}
+                            </Button>
+                        ) : null}
+                        <Button onClick={() => setIsNewCommentOpen(true)}>
+                            Add
+                        </Button>
+                    </div>
+                </div>
+            </div>
+            <NewCommentModule
+                isOpen={isNewCommentOpen}
+                node={node}
+                onClose={() => setIsNewCommentOpen(false)}
+            />
+            <Modal
+                isOpen={isCommentListModalOpen}
+                onDismiss={() => setIsCommentListModalOpen(false)}>
+                <CommentListModule node={node} />
             </Modal>
-
-            <>
-                <Button
-                    onClick={() => {
-                        setIsModalOpen(true);
-                    }}>
-                    {node.id} {node.name}
-                </Button>
-                <Button
-                    onClick={() => {
-                        onDelete(node);
-                    }}>
-                    Delete
-                </Button>
-            </>
         </>
     );
 }

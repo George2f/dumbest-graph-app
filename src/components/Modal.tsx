@@ -15,7 +15,7 @@ export default function Modal({ children, isOpen, onDismiss }: IModalProps) {
             <button
                 className="fixed left-0 top-0 z-0 h-full w-full bg-black opacity-20"
                 onClick={onDismiss}></button>
-            <div className="z-10 flex flex-col gap-1.5 bg-slate-200 p-1 shadow-2xl">
+            <div className="z-10 bg-slate-200 p-1 shadow-2xl">
                 <div className="rounded-md bg-white p-1.5 shadow-inner">
                     {children}
                 </div>
