@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import IGraph from '../../../../types/IGraph';
-import INode from '../../../../types/INode';
-import TagPill from '../../../../components/TagPill';
-import Button from '../../../../components/Button';
-import Modal from '../../../../components/Modal';
-import NewCommentModule from '../../../comment/NewCommentModule';
-import CommentListModule from '../../../comment/CommentListModule';
+import IGraph from '../../../../../types/IGraph';
+import INode from '../../../../../types/INode';
+import TagPill from '../../../../../components/TagPill';
+import Button from '../../../../../components/Button';
+import Modal from '../../../../../components/Modal';
+import NewCommentModule from '../../../../comment/NewCommentModule';
+import CommentListModule from '../../../../comment/CommentListModule';
 
 interface INodeListItemProps {
     node: INode;

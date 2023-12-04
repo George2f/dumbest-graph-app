@@ -15,6 +15,7 @@ export default function LinkListModule() {
                     <li key={link.id}>
                         <LinkListItem
                             link={link}
+                            graph={graph}
                             onDelete={() => {
                                 const command = new DeleteLinkCommand(
                                     link,

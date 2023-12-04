@@ -11,7 +11,7 @@ export default function Dashboard() {
             <NewNodeModule />
             <NewLinkModule />
             <NewTagModule />
-            <div className="grid grid-cols-2 grid-rows-2 overflow-auto">
+            <div className="grid grid-cols-2 grid-rows-2 overflow-auto gap-2">
                 <section>
                     <NodeListModule />
                 </section>

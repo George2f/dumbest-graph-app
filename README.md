@@ -3,7 +3,7 @@
 ## TODO
 
 - tags - done
-- tailwind
+- tailwind - done
 - attributes
 - templates
 - graph filter

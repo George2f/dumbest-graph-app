@@ -2,7 +2,7 @@ import { useGraph } from '../../../providers/GraphProvider';
 import { useHistory } from '../../../providers/HistoryProvider';
 import EditNodeCommand from '../../../Command/EditNodeCommand';
 import DeleteNodeCommand from '../../../Command/DeleteNodeCommand';
-import NodeListItem from './NodeListItem';
+import NodeListItem from './components/NodeListItem';
 
 export default function NodeListModule() {
     const graph = useGraph();
