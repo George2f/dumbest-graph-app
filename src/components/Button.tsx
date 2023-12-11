@@ -13,7 +13,7 @@ export default function Button({
                 className
             )}
             {...props}>
-            <span className="inline-block rounded-md bg-white px-2 py-0.5 hover:bg-green-200">
+            <span className="inline-block w-full rounded-md bg-white px-2 py-0.5 hover:bg-green-200">
                 {children}
             </span>
         </button>

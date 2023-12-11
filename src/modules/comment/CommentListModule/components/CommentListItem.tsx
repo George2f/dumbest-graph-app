@@ -3,6 +3,7 @@ import Button from '../../../../components/Button';
 import Modal from '../../../../components/Modal';
 import IComment from '../../../../types/IComment';
 import IGraph from '../../../../types/IGraph';
+import ConfirmModal from '../../../../components/ConfirmModal';
 
 interface ICommentListItemProps {
     comment: IComment;
@@ -18,6 +19,8 @@ export default function CommentListItem({
     graph,
 }: ICommentListItemProps) {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] =
+        useState<boolean>(false);
 
     const [editCommentText, setEditCommentText] = useState<string>(
         comment.text
@@ -54,7 +57,9 @@ export default function CommentListItem({
                     </label>
                     <div>
                         <Button type="submit">Save</Button>
-                        <Button onClick={onDelete}>Delete</Button>
+                        <Button onClick={() => setIsConfirmModalOpen(true)}>
+                            Delete
+                        </Button>
                     </div>
                 </form>
             </Modal>
@@ -77,7 +82,16 @@ export default function CommentListItem({
                     {comment.text}
                 </div>
             </Button>
-            <Button onClick={onDelete}>Delete</Button>
+            <Button onClick={() => setIsConfirmModalOpen(true)}>Delete</Button>
+            <ConfirmModal
+                isOpen={isConfirmModalOpen}
+                onConfirm={() => {
+                    onDelete();
+                    setIsConfirmModalOpen(false);
+                }}
+                onDismiss={() => setIsConfirmModalOpen(false)}>
+                <div>Are you sure you want to delete this comment?</div>
+            </ConfirmModal>
         </>
     );
 }

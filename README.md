@@ -5,5 +5,5 @@
 - tags - done
 - tailwind - done
 - attributes
-- templates
 - graph filter
+- templates

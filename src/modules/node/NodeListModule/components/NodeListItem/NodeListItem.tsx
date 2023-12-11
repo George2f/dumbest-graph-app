@@ -6,6 +6,7 @@ import Button from '../../../../../components/Button';
 import Modal from '../../../../../components/Modal';
 import NewCommentModule from '../../../../comment/NewCommentModule';
 import CommentListModule from '../../../../comment/CommentListModule';
+import ConfirmModal from '../../../../../components/ConfirmModal';
 
 interface INodeListItemProps {
     node: INode;
@@ -27,6 +28,8 @@ export default function NodeListItem({
     const [isCommentListModalOpen, setIsCommentListModalOpen] =
         useState<boolean>(false);
     const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] =
+        useState<boolean>(false);
 
     const relatedComments = graph.comments.filter(
         (comment) => comment.targetId === node.id
@@ -126,7 +129,7 @@ export default function NodeListItem({
                         <Button type="submit">Save</Button>
                         <Button
                             onClick={() => {
-                                onDelete(node);
+                                setIsConfirmModalOpen(true);
                             }}>
                             Delete
                         </Button>
@@ -144,7 +147,7 @@ export default function NodeListItem({
                     </Button>
                     <Button
                         onClick={() => {
-                            onDelete(node);
+                            setIsConfirmModalOpen(true);
                         }}>
                         Delete
                     </Button>
@@ -172,6 +175,15 @@ export default function NodeListItem({
                 onDismiss={() => setIsCommentListModalOpen(false)}>
                 <CommentListModule node={node} />
             </Modal>
+            <ConfirmModal
+                isOpen={isConfirmModalOpen}
+                onConfirm={() => {
+                    onDelete(node);
+                    setIsConfirmModalOpen(false);
+                }}
+                onDismiss={() => setIsConfirmModalOpen(false)}>
+                Are you sure you want to delete this node?
+            </ConfirmModal>
         </>
     );
 }

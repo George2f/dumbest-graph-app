@@ -8,6 +8,7 @@ import Modal from '../../../../../components/Modal';
 import IGraph from '../../../../../types/IGraph';
 import NewCommentModule from '../../../../comment/NewCommentModule';
 import CommentListModule from '../../../../comment/CommentListModule';
+import ConfirmModal from '../../../../../components/ConfirmModal';
 
 interface ILinkListItemProps {
     link: ILink;
@@ -28,6 +29,8 @@ export default function LinkListItem({
     const [isCommentListModalOpen, setIsCommentListModalOpen] =
         useState<boolean>(false);
     const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] =
+        useState<boolean>(false);
 
     const relatedComments = graph.comments.filter(
         (comment) => comment.targetId === link.id
@@ -42,7 +45,7 @@ export default function LinkListItem({
                         onChange(link);
                         setIsModalOpen(false);
                     }}
-                    onDelete={onDelete}
+                    onDelete={() => setIsConfirmModalOpen(true)}
                     nodes={nodes}
                     active={isModalOpen}
                 />
@@ -63,7 +66,9 @@ export default function LinkListItem({
                                     ?.name || ''
                             )}
                         </Button>
-                        <Button onClick={onDelete}>Delete</Button>
+                        <Button onClick={() => setIsConfirmModalOpen(true)}>
+                            Delete
+                        </Button>
                     </div>
                     <div>
                         Comments:
@@ -89,6 +94,12 @@ export default function LinkListItem({
                 onDismiss={() => setIsCommentListModalOpen(false)}>
                 <CommentListModule link={link} />
             </Modal>
+            <ConfirmModal
+                isOpen={isConfirmModalOpen}
+                onConfirm={onDelete}
+                onDismiss={() => setIsConfirmModalOpen(false)}>
+                <div>Are you sure you want to delete this link?</div>
+            </ConfirmModal>
         </>
     );
 }
