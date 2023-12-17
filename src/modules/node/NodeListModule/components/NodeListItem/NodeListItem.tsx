@@ -23,8 +23,11 @@ export default function NodeListItem({
 }: INodeListItemProps) {
     const [editNodeTags, setEditNodeTags] = useState(node.tags || []);
     const [editNodeName, setEditNodeName] = useState(node.name);
+    const [editNodeAttributes, setEditNodeAttributes] = useState<
+        [string, string][]
+    >(node.attributes?.concat([['', '']]) || [['', '']]);
     const [selectedNewTag, setSelectedNewTag] = useState<string>('');
-    const [isNodeModalOpen, setIsNodeModalOpen] = useState<boolean>(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
     const [isCommentListModalOpen, setIsCommentListModalOpen] =
         useState<boolean>(false);
     const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
@@ -37,10 +40,45 @@ export default function NodeListItem({
 
     return (
         <>
+            <div className="my-2 rounded-r-xl bg-slate-200 p-2 pl-0">
+                <div className="rounded-r-lg bg-white p-1.5">
+                    <Button
+                        onClick={() => {
+                            setIsEditModalOpen(true);
+                            setEditNodeName(node.name);
+                            setEditNodeTags(node.tags || []);
+                            setEditNodeAttributes(
+                                node.attributes?.concat([['', '']]) || [
+                                    ['', ''],
+                                ]
+                            );
+                        }}>
+                        {node.id} {node.name}
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            setIsConfirmModalOpen(true);
+                        }}>
+                        Delete
+                    </Button>
+                    <div>
+                        Comments:
+                        {relatedComments.length ? (
+                            <Button
+                                onClick={() => setIsCommentListModalOpen(true)}>
+                                {relatedComments.length}
+                            </Button>
+                        ) : null}
+                        <Button onClick={() => setIsNewCommentOpen(true)}>
+                            Add
+                        </Button>
+                    </div>
+                </div>
+            </div>
             <Modal
-                isOpen={isNodeModalOpen}
+                isOpen={isEditModalOpen}
                 onDismiss={() => {
-                    setIsNodeModalOpen(false);
+                    setIsEditModalOpen(false);
                     setEditNodeTags(node.tags || []);
                     setEditNodeName(node.name);
                 }}>
@@ -52,8 +90,11 @@ export default function NodeListItem({
                             ...node,
                             name: editNodeName,
                             tags: editNodeTags,
+                            attributes: editNodeAttributes.filter(
+                                ([key, value]) => key && value
+                            ),
                         });
-                        setIsNodeModalOpen(false);
+                        setIsEditModalOpen(false);
                     }}>
                     <label>
                         Name:
@@ -65,6 +106,62 @@ export default function NodeListItem({
                             }
                         />
                     </label>
+                    <div>Attributes:</div>
+                    {editNodeAttributes.map(([key, value], index) => (
+                        <div key={index}>
+                            <label>
+                                Key:
+                                <input
+                                    type="text"
+                                    value={key}
+                                    onChange={(event) => {
+                                        const isLast =
+                                            index ===
+                                            editNodeAttributes.length - 1;
+
+                                        const editAttributesCopy = [
+                                            ...editNodeAttributes,
+                                        ];
+                                        editAttributesCopy[index][0] =
+                                            event.target.value;
+                                        if (isLast) {
+                                            editAttributesCopy.push(['', '']);
+                                        }
+                                        setEditNodeAttributes(
+                                            editAttributesCopy
+                                        );
+                                    }}
+                                />
+                            </label>
+                            <label>
+                                Value:
+                                <input
+                                    type="text"
+                                    value={value}
+                                    onChange={(event) => {
+                                        const newAttributes =
+                                            editNodeAttributes.slice();
+                                        newAttributes[index][1] =
+                                            event.target.value;
+                                        setEditNodeAttributes(newAttributes);
+                                    }}
+                                />
+                            </label>
+                            {index === editNodeAttributes.length - 1 ? null : (
+                                <Button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        const newAttributes =
+                                            editNodeAttributes.slice();
+                                        newAttributes.splice(index, 1);
+                                        setEditNodeAttributes(newAttributes);
+                                    }}>
+                                    Delete
+                                </Button>
+                            )}
+                        </div>
+                    ))}
                     <div>
                         <select
                             onChange={(e) => setSelectedNewTag(e.target.value)}
@@ -136,35 +233,6 @@ export default function NodeListItem({
                     </div>
                 </form>
             </Modal>
-
-            <div className="my-2 rounded-r-xl bg-slate-200 p-2 pl-0">
-                <div className="rounded-r-lg bg-white p-1.5">
-                    <Button
-                        onClick={() => {
-                            setIsNodeModalOpen(true);
-                        }}>
-                        {node.id} {node.name}
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            setIsConfirmModalOpen(true);
-                        }}>
-                        Delete
-                    </Button>
-                    <div>
-                        Comments:
-                        {relatedComments.length ? (
-                            <Button
-                                onClick={() => setIsCommentListModalOpen(true)}>
-                                {relatedComments.length}
-                            </Button>
-                        ) : null}
-                        <Button onClick={() => setIsNewCommentOpen(true)}>
-                            Add
-                        </Button>
-                    </div>
-                </div>
-            </div>
             <NewCommentModule
                 isOpen={isNewCommentOpen}
                 node={node}

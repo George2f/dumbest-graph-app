@@ -11,6 +11,9 @@ export default function NewNodeModule() {
 
     const [newNodeName, setNewNodeName] = useState<string>('');
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [newAttributes, setNewAttributes] = useState<[string, string][]>([
+        ['', ''],
+    ]);
 
     return (
         <>
@@ -26,6 +29,9 @@ export default function NewNodeModule() {
                                 id: graph.getNewId(),
                                 name: newNodeName,
                                 tags: [],
+                                attributes: newAttributes.filter(
+                                    ([key, value]) => key && value
+                                ),
                             },
                             graph
                         );
@@ -33,6 +39,7 @@ export default function NewNodeModule() {
                         history.push(command);
 
                         setNewNodeName('');
+                        setNewAttributes([['', '']]);
                     }}>
                     <label>
                         Name:
@@ -45,6 +52,59 @@ export default function NewNodeModule() {
                             }
                         />
                     </label>
+                    <h4>Attributes</h4>
+                    {newAttributes.map(([key, value], index) => (
+                        <div key={index}>
+                            <label>
+                                Key:
+                                <input
+                                    type="text"
+                                    value={key}
+                                    onChange={(event) => {
+                                        const isLast =
+                                            index === newAttributes.length - 1;
+
+                                        const newAttributesCopy = [
+                                            ...newAttributes,
+                                        ];
+                                        newAttributesCopy[index][0] =
+                                            event.target.value;
+                                        if (isLast) {
+                                            newAttributesCopy.push(['', '']);
+                                        }
+                                        setNewAttributes(newAttributesCopy);
+                                    }}
+                                />
+                            </label>
+                            <label>
+                                Value:
+                                <input
+                                    type="text"
+                                    value={value}
+                                    onChange={(event) => {
+                                        const newAttributesCopy = [
+                                            ...newAttributes,
+                                        ];
+                                        newAttributesCopy[index][1] =
+                                            event.target.value;
+                                        setNewAttributes(newAttributesCopy);
+                                    }}
+                                />
+                            </label>
+                            {index === newAttributes.length - 1 ? null : (
+                                <Button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        const futureNewAttributes =
+                                            newAttributes.slice();
+                                        futureNewAttributes.splice(index, 1);
+                                        setNewAttributes(futureNewAttributes);
+                                    }}>
+                                    Delete
+                                </Button>
+                            )}
+                        </div>
+                    ))}
                     <div>
                         <Button type="submit">Add Node</Button>
                     </div>

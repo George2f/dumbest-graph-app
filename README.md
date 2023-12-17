@@ -4,6 +4,6 @@
 
 - tags - done
 - tailwind - done
-- attributes
+- attributes - done
 - graph filter
 - templates
