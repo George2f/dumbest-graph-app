@@ -7,7 +7,11 @@ import { useHistory } from '../../../providers/HistoryProvider';
 import Button from '../../../components/Button';
 import Modal from '../../../components/Modal';
 
-export default function NewLinkModule() {
+interface INewLinkModuleProps {
+    node1?: INode;
+}
+
+export default function NewLinkModule({ node1 }: INewLinkModuleProps) {
     const graph = useGraph();
     const history = useHistory();
 
@@ -15,7 +19,9 @@ export default function NewLinkModule() {
     const [newLinkType, setNewLinkType] = React.useState<LINK_TYPE_ENUM>(
         LINK_TYPE_ENUM.SIMPLE
     );
-    const [newLinkNode1, setNewLinkNode1] = React.useState<INode | null>(null);
+    const [newLinkNode1, setNewLinkNode1] = React.useState<INode | null>(
+        node1 || null
+    );
     const [newLinkNode2, setNewLinkNode2] = React.useState<INode | null>(null);
 
     const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);

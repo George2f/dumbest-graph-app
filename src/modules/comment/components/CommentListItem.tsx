@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import Button from '../../../../components/Button';
-import Modal from '../../../../components/Modal';
-import IComment from '../../../../types/IComment';
-import IGraph from '../../../../types/IGraph';
-import ConfirmModal from '../../../../components/ConfirmModal';
+import Button from '../../../components/Button';
+import IComment from '../../../types/IComment';
+import IGraph from '../../../types/IGraph';
+import ConfirmModal from '../../../components/ConfirmModal';
+import EditCommentModal from './EditCommentModal';
 
 interface ICommentListItemProps {
     comment: IComment;
@@ -22,47 +22,19 @@ export default function CommentListItem({
     const [isConfirmModalOpen, setIsConfirmModalOpen] =
         useState<boolean>(false);
 
-    const [editCommentText, setEditCommentText] = useState<string>(
-        comment.text
-    );
-
     return (
         <>
-            <Modal
+            <EditCommentModal
                 isOpen={isModalOpen}
                 onDismiss={() => {
                     setIsModalOpen(false);
-                    setEditCommentText(comment.text);
-                }}>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        if (!editCommentText) return;
-                        onChange({
-                            ...comment,
-                            text: editCommentText,
-                        });
-                        setIsModalOpen(false);
-                    }}>
-                    <label>
-                        Text:
-                        <input
-                            type="text"
-                            autoFocus
-                            value={editCommentText}
-                            onChange={(event) =>
-                                setEditCommentText(event.target.value)
-                            }
-                        />
-                    </label>
-                    <div>
-                        <Button type="submit">Save</Button>
-                        <Button onClick={() => setIsConfirmModalOpen(true)}>
-                            Delete
-                        </Button>
-                    </div>
-                </form>
-            </Modal>
+                }}
+                comment={comment}
+                onDelete={() => setIsConfirmModalOpen(true)}
+                onChange={(newComment) => {
+                    onChange(newComment);
+                }}
+            />
             <Button
                 onClick={() => {
                     setIsModalOpen(true);

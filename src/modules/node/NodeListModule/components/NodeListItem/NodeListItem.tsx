@@ -5,7 +5,7 @@ import TagPill from '../../../../../components/TagPill';
 import Button from '../../../../../components/Button';
 import Modal from '../../../../../components/Modal';
 import NewCommentModule from '../../../../comment/NewCommentModule';
-import CommentListModule from '../../../../comment/CommentListModule';
+import CommentListModule from '../../../../comment/CommentListModule/CommentListModule';
 import ConfirmModal from '../../../../../components/ConfirmModal';
 
 interface INodeListItemProps {
@@ -61,6 +61,11 @@ export default function NodeListItem({
                         }}>
                         Delete
                     </Button>
+                    <div className="flex flex-row flex-wrap gap-1.5">
+                        {node.tags.map((tagId) => (
+                            <TagPill key={tagId} tag={graph.getTag(tagId)!} />
+                        ))}
+                    </div>
                     <div>
                         Comments:
                         {relatedComments.length ? (
@@ -108,11 +113,12 @@ export default function NodeListItem({
                     </label>
                     <div>Attributes:</div>
                     {editNodeAttributes.map(([key, value], index) => (
-                        <div key={index}>
-                            <label>
+                        <div key={index} className="ring">
+                            <label className="flex flex-row">
                                 Key:
                                 <input
                                     type="text"
+                                    className="w-full"
                                     value={key}
                                     onChange={(event) => {
                                         const isLast =
@@ -133,10 +139,11 @@ export default function NodeListItem({
                                     }}
                                 />
                             </label>
-                            <label>
+                            <label className="flex flex-row">
                                 Value:
                                 <input
                                     type="text"
+                                    className="w-full"
                                     value={value}
                                     onChange={(event) => {
                                         const newAttributes =

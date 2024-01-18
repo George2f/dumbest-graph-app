@@ -35,8 +35,8 @@ export default function HeaderModule() {
             <div className="flex flex-row justify-between">
                 <div>
                     <div>
-                        <h1 className="inline-block pr-1 text-3xl font-bold">
-                            DGA - Dumbest Graph App{' '}
+                        <h1 className="inline-block pr-4 text-3xl font-bold">
+                            DGA - Dumbest Graph App
                         </h1>
                         <Button
                             onClick={() => {
