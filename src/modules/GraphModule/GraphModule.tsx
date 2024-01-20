@@ -24,15 +24,15 @@ export default function GraphModule() {
             }),
             links: links.map((link) => {
                 const label =
-                    link.type === LINK_TYPE_ENUM.A_TO_B
-                        ? link.name
-                        : generateLinkName(
+                    link.type === LINK_TYPE_ENUM.BOTH_WAYS
+                        ? generateLinkName(
                               {
                                   ...link,
                               },
                               '',
                               ''
-                          );
+                          )
+                        : link.name;
 
                 const firstNode = Math.min(link.node1Id, link.node2Id);
                 const secondNode = Math.max(link.node1Id, link.node2Id);

@@ -40,8 +40,8 @@ export default function NodeListItem({
 
     return (
         <>
-            <div className="my-2 rounded-r-xl bg-slate-200 p-2 pl-0">
-                <div className="rounded-r-lg bg-white p-1.5">
+            <div className="my-2 rounded-xl bg-slate-200 p-2">
+                <div className="rounded-lg bg-white p-1.5">
                     <Button
                         onClick={() => {
                             setIsEditModalOpen(true);
