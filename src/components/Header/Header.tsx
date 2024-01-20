@@ -31,7 +31,7 @@ export default function Header() {
     };
 
     return (
-        <header className="flex flex-row justify-between">
+        <header className="flex flex-row justify-between shadow-md">
             <div>
                 <div>
                     <h1 className="inline-block pr-4 text-3xl font-bold">
@@ -79,10 +79,14 @@ export default function Header() {
                 </div>
                 <div className="flex flex-row">
                     <div>
-                        <Button onClick={() => navigate('./dashboard')}>
-                            Dashboard
+                        <Button onClick={() => navigate('/nodes')}>
+                            Nodes
                         </Button>
-                        <Button onClick={() => navigate('./graph')}>
+                        <Button onClick={() => navigate('/links')}>
+                            Links
+                        </Button>
+                        <Button onClick={() => navigate('/tags')}>Tags</Button>
+                        <Button onClick={() => navigate('/graph')}>
                             Graph
                         </Button>
                     </div>

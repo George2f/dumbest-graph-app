@@ -1,4 +1,3 @@
-import Dashboard from './pages/dashboard';
 import Root from './pages';
 import {
     Navigate,
@@ -9,6 +8,9 @@ import {
     createRoutesFromElements,
 } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
+import Nodes from './pages/nodes';
+import Links from './pages/links';
+import Tags from './pages/tags';
 
 const Graph = lazy(() => import('./pages/graph'));
 
@@ -21,7 +23,9 @@ const router = createBrowserRouter(
                     <Outlet />
                 </Root>
             }>
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="nodes" element={<Nodes />} />
+            <Route path="links" element={<Links />} />
+            <Route path="tags" element={<Tags />} />
             <Route
                 path="graph"
                 element={
@@ -30,7 +34,7 @@ const router = createBrowserRouter(
                     </Suspense>
                 }
             />
-            <Route path="*" element={<Navigate to="dashboard" />} />
+            <Route path="*" element={<Navigate to="nodes" />} />
         </Route>
     )
 );

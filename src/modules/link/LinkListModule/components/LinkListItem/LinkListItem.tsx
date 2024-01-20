@@ -50,8 +50,8 @@ export default function LinkListItem({
                     active={isModalOpen}
                 />
             </Modal>
-            <div className="my-2 rounded-l-xl bg-slate-200 p-2 pr-0">
-                <div className="rounded-l-lg bg-white p-1.5">
+            <div className="my-2 rounded-xl bg-slate-200 p-2">
+                <div className="rounded-lg bg-white p-1.5">
                     <div>
                         <Button
                             onClick={() => {

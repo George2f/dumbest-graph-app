@@ -10,7 +10,7 @@
   - link list from node
   - add tag on click
   - filter node list by tag
-  - anchored header
+  - anchored header - done
 - graph filter by tag
 - graph focus node neighbor
 - templates
