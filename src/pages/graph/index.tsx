@@ -2,15 +2,7 @@ import GraphModule from '../../modules/GraphModule';
 
 export default function Graph() {
     return (
-        <main
-            style={{
-                borderTop: '1px solid grey',
-                borderBottom: '1px solid grey',
-                backgroundColor: 'lightblue',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}>
+        <main className="h-full overflow-hidden border-b-2 border-lime-200 bg-lime-200">
             <GraphModule />
         </main>
     );

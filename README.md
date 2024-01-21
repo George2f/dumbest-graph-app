@@ -11,6 +11,6 @@
   - add tag on click - done
   - filter node list by tag - done
   - anchored header - done
-- graph focus by tag
-- graph focus node neighbor
+- graph focus by tag - done
+- graph focus node neighbor - done
 - templates
