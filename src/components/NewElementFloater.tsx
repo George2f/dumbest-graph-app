@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Button from './Button';
 
 interface INewElementFloaterProps {
@@ -12,21 +11,11 @@ export default function NewElementFloater({
     onNewNodeClick,
     onNewTagClick,
 }: INewElementFloaterProps) {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-
     return (
-        <div className="fixed bottom-0 right-0 flex flex-col mb-4 mr-4 shadow-md bg-zinc-100">
-            {isOpen ? (
-                <div className="flex flex-col">
-                    <Button onClick={onNewNodeClick}>Node</Button>
-                    <Button onClick={onNewLinkClick}>Link</Button>
-                    <Button onClick={onNewTagClick}>Tag</Button>
-                </div>
-            ) : null}
-
-            <Button onClick={() => setIsOpen((v) => !v)}>
-                {isOpen ? 'Close' : 'New'}
-            </Button>
+        <div className="fixed bottom-0 right-0 mb-4 mr-4 flex flex-col bg-zinc-100 shadow-md">
+            <Button onClick={onNewNodeClick}>New Node</Button>
+            <Button onClick={onNewLinkClick}>New Link</Button>
+            <Button onClick={onNewTagClick}>New Tag</Button>
         </div>
     );
 }

@@ -183,7 +183,7 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 }
             });
         },
-        [tags]
+        [handleEditNode, nodes]
     );
 
     const handleEditTag = React.useCallback((id: IdType, tag: ITag) => {

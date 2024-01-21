@@ -8,8 +8,8 @@ export default function NewTagModule() {
     const graph = useGraph();
     const history = useHistory();
 
-    const [name, setName] = useState('');
-    const [color, setColor] = useState('');
+    const [name, setName] = useState<string>('');
+    const [color, setColor] = useState<string>('');
     const nameInputRef = useRef<HTMLInputElement>(null);
 
     return (
@@ -41,6 +41,7 @@ export default function NewTagModule() {
                             autoFocus
                             ref={nameInputRef}
                             value={name}
+                            type="text"
                             onChange={(e) => setName(e.target.value)}
                         />
                     </label>
@@ -54,7 +55,7 @@ export default function NewTagModule() {
                         />
                         <input
                             type="color"
-                            value={color}
+                            value={color || '#fff'}
                             onChange={(e) => setColor(e.target.value)}
                         />
                     </label>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useGraph } from '../../../providers/GraphProvider';
 import { useHistory } from '../../../providers/HistoryProvider';
 import AddNodeCommand from '../../../Command/AddNodeCommand';
@@ -13,30 +13,34 @@ export default function NewNodeModule() {
         ['', ''],
     ]);
 
+    const handleSubmit = useCallback(
+        (e) => {
+            e.preventDefault();
+            if (!newNodeName) return;
+            const command = new AddNodeCommand(
+                {
+                    id: graph.getNewId(),
+                    name: newNodeName,
+                    tags: [],
+                    attributes: newAttributes.filter(
+                        ([key, value]) => key && value
+                    ),
+                },
+                graph
+            );
+            command.execute();
+            history.push(command);
+
+            setNewNodeName('');
+            setNewAttributes([['', '']]);
+        },
+        [graph, history, newAttributes, newNodeName]
+    );
+
     return (
         <>
             <h3>New Node</h3>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    if (!newNodeName) return;
-                    const command = new AddNodeCommand(
-                        {
-                            id: graph.getNewId(),
-                            name: newNodeName,
-                            tags: [],
-                            attributes: newAttributes.filter(
-                                ([key, value]) => key && value
-                            ),
-                        },
-                        graph
-                    );
-                    command.execute();
-                    history.push(command);
-
-                    setNewNodeName('');
-                    setNewAttributes([['', '']]);
-                }}>
+            <form onSubmit={handleSubmit}>
                 <label>
                     Name:
                     <input
@@ -87,6 +91,8 @@ export default function NewNodeModule() {
                         </label>
                         {index === newAttributes.length - 1 ? null : (
                             <Button
+                                type="reset"
+                                tabIndex={-1}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     const futureNewAttributes =
