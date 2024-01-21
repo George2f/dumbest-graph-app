@@ -17,12 +17,12 @@ export default function Root({ children }: { children: ReactNode }) {
         <>
             <div className="flex h-full flex-col overflow-y-hidden">
                 <Header />
+                <div className="relative overflow-y-scroll">{children}</div>
                 <NewElementFloater
                     onNewLinkClick={() => setIsNewLinkModalOpen(true)}
                     onNewNodeClick={() => setIsNewNodeModalOpen(true)}
                     onNewTagClick={() => setIsNewTagModalOpen(true)}
                 />
-                <div className="overflow-y-scroll">{children}</div>
                 <Modal
                     isOpen={isNewNodeModalOpen}
                     onDismiss={() => setIsNewNodeModalOpen(false)}>

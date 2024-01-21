@@ -9,7 +9,7 @@
   - link from node - done
   - link list from node - done
   - add tag on click - done
-  - filter node list by tag
+  - filter node list by tag - done
   - anchored header - done
 - graph focus by tag
 - graph focus node neighbor
