@@ -15,7 +15,7 @@ export default function NewElementFloater({
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     return (
-        <div className="fixed bottom-0 right-0 flex flex-col mb-4 mr-4 shadow-md">
+        <div className="fixed bottom-0 right-0 flex flex-col mb-4 mr-4 shadow-md bg-zinc-100">
             {isOpen ? (
                 <div className="flex flex-col">
                     <Button onClick={onNewNodeClick}>Node</Button>

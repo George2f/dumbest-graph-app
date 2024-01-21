@@ -30,7 +30,6 @@ export default function NodeDetailsModule({
     const [editNodeAttributes, setEditNodeAttributes] = useState<
         [string, string][]
     >(node.attributes?.concat([['', '']]) || [['', '']]);
-    const [selectedNewTag, setSelectedNewTag] = useState<string>('');
     const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
     const [isCommentListModalOpen, setIsCommentListModalOpen] =
         useState<boolean>(false);
@@ -153,32 +152,7 @@ export default function NodeDetailsModule({
                         )}
                     </div>
                 ))}
-                <div>
-                    <select
-                        onChange={(e) => setSelectedNewTag(e.target.value)}
-                        value={selectedNewTag}>
-                        {graph.tags
-                            .filter((tag) => !editNodeTags.includes(tag.id))
-                            .map((tag) => (
-                                <option key={tag.id} value={tag.id}>
-                                    {tag.name}
-                                </option>
-                            ))}
-                        <option value={''}>-</option>
-                    </select>
-                    <Button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (!selectedNewTag) return;
-                            setEditNodeTags([
-                                ...editNodeTags,
-                                Number.parseInt(selectedNewTag),
-                            ]);
-                            setSelectedNewTag('');
-                        }}>
-                        AddTag
-                    </Button>
-                </div>
+
                 <div className="flex flex-row flex-wrap gap-1.5">
                     {editNodeTags.map((tagId) => (
                         <TagPill
@@ -191,6 +165,24 @@ export default function NodeDetailsModule({
                             }}
                         />
                     ))}
+                    <select
+                        className="rounded-full bg-zinc-200 px-2 py-0.5 hover:bg-zinc-200  active:bg-zinc-300"
+                        onChange={(e) => {
+                            setEditNodeTags([
+                                ...editNodeTags,
+                                Number.parseInt(e.target.value),
+                            ]);
+                        }}
+                        value="">
+                        {graph.tags
+                            .filter((tag) => !editNodeTags.includes(tag.id))
+                            .map((tag) => (
+                                <option key={tag.id} value={tag.id}>
+                                    {tag.name}
+                                </option>
+                            ))}
+                        <option value={''}>Add Tag</option>
+                    </select>
                 </div>
                 <div>
                     Comments:

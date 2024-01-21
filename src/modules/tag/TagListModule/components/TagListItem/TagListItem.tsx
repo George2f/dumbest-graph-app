@@ -3,6 +3,7 @@ import ITag from '../../../../../types/ITag';
 import TagPill from '../../../../../components/TagPill';
 import Button from '../../../../../components/Button';
 import Modal from '../../../../../components/Modal';
+import ConfirmModal from '../../../../../components/ConfirmModal';
 
 interface ITagListItemProps {
     onChange: (tag: ITag) => void;
@@ -16,6 +17,7 @@ export default function TagListItem({
     tag,
 }: ITagListItemProps) {
     const [isEditing, setIsEditing] = useState(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
     const [editTagName, setEditTagName] = useState(tag.name);
     const [editTagColor, setEditTagColor] = useState(tag.color);
@@ -80,9 +82,15 @@ export default function TagListItem({
 
             <TagPill
                 tag={tag}
-                onDelete={() => onDelete(tag)}
+                onDelete={() => setIsConfirmModalOpen(true)}
                 onEdit={() => setIsEditing(true)}
             />
+            <ConfirmModal
+                isOpen={isConfirmModalOpen}
+                onConfirm={() => onDelete(tag)}
+                onDismiss={() => setIsConfirmModalOpen(false)}>
+                <div>Are you sure you want to delete this tag?</div>
+            </ConfirmModal>
         </li>
     );
 }
