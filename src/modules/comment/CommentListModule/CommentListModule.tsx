@@ -2,7 +2,7 @@ import { useGraph } from '../../../providers/GraphProvider';
 import { useHistory } from '../../../providers/HistoryProvider';
 import EditCommentCommand from '../../../Command/EditCommentCommand';
 import DeleteCommentCommand from '../../../Command/DeleteCommentCommand';
-import CommentListItem from '../components/CommentListItem';
+import CommentListItem from './components/CommentListItem';
 import INode from '../../../types/INode';
 import ILink from '../../../types/ILink';
 

@@ -52,6 +52,11 @@ export default function NewTagModule() {
                             value={color}
                             onChange={(e) => setColor(e.target.value)}
                         />
+                        <input
+                            type="color"
+                            value={color}
+                            onChange={(e) => setColor(e.target.value)}
+                        />
                     </label>
                 </div>
                 <div>

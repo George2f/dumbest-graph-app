@@ -2,7 +2,6 @@ import { useState } from 'react';
 import ITag from '../../../../../types/ITag';
 import TagPill from '../../../../../components/TagPill';
 import Button from '../../../../../components/Button';
-import ColorSquare from '../../../../../components/ColorSquare';
 import Modal from '../../../../../components/Modal';
 
 interface ITagListItemProps {
@@ -51,9 +50,15 @@ export default function TagListItem({
                     <div>
                         <label>
                             Color:
-                            <ColorSquare color={editTagColor} />
                             <input
                                 type="text"
+                                value={editTagColor}
+                                onChange={(event) =>
+                                    setEditTagColor(event.target.value)
+                                }
+                            />
+                            <input
+                                type="color"
                                 value={editTagColor}
                                 onChange={(event) =>
                                     setEditTagColor(event.target.value)

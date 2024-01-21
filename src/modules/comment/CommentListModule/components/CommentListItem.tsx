@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import Button from '../../../components/Button';
-import IComment from '../../../types/IComment';
-import IGraph from '../../../types/IGraph';
-import ConfirmModal from '../../../components/ConfirmModal';
+import Button from '../../../../components/Button';
+import IComment from '../../../../types/IComment';
+import IGraph from '../../../../types/IGraph';
+import ConfirmModal from '../../../../components/ConfirmModal';
 import EditCommentModal from './EditCommentModal';
 
 interface ICommentListItemProps {

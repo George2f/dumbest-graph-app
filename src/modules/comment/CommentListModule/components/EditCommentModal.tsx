@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Modal from '../../../components/Modal';
-import IComment from '../../../types/IComment';
-import Button from '../../../components/Button';
+import Modal from '../../../../components/Modal';
+import IComment from '../../../../types/IComment';
+import Button from '../../../../components/Button';
 
 interface IEditCommentModalProps {
     isOpen: boolean;
