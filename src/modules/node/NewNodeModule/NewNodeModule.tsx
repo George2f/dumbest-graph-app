@@ -3,15 +3,25 @@ import { useGraph } from '../../../providers/GraphProvider';
 import { useHistory } from '../../../providers/HistoryProvider';
 import AddNodeCommand from '../../../Command/AddNodeCommand';
 import Button from '../../../components/Button';
+import IdType from '../../../types/IdType';
+import TagPill from '../../../components/TagPill';
+import INode from '../../../types/INode';
 
-export default function NewNodeModule() {
+interface NewNodeModuleProps {
+    original?: INode;
+}
+
+export default function NewNodeModule({ original }: NewNodeModuleProps) {
     const graph = useGraph();
     const history = useHistory();
 
     const [newNodeName, setNewNodeName] = useState<string>('');
-    const [newAttributes, setNewAttributes] = useState<[string, string][]>([
-        ['', ''],
-    ]);
+    const [newAttributes, setNewAttributes] = useState<[string, string][]>(
+        original?.attributes || [['', '']]
+    );
+    const [newNodeTags, setNewNodeTags] = useState<IdType[]>(
+        original?.tags || []
+    );
 
     const handleSubmit = useCallback(
         (e) => {
@@ -21,7 +31,7 @@ export default function NewNodeModule() {
                 {
                     id: graph.getNewId(),
                     name: newNodeName,
-                    tags: [],
+                    tags: newNodeTags,
                     attributes: newAttributes.filter(
                         ([key, value]) => key && value
                     ),
@@ -32,14 +42,14 @@ export default function NewNodeModule() {
             history.push(command);
 
             setNewNodeName('');
-            setNewAttributes([['', '']]);
+            setNewAttributes(newAttributes.map(([key]) => [key, '']));
         },
-        [graph, history, newAttributes, newNodeName]
+        [graph, history, newAttributes, newNodeName, newNodeTags]
     );
 
     return (
         <>
-            <h3>New Node</h3>
+            <h2 className="text-xl">{original ? 'Copy' : 'New'} Node</h2>
             <form onSubmit={handleSubmit}>
                 <label>
                     Name:
@@ -105,6 +115,37 @@ export default function NewNodeModule() {
                         )}
                     </div>
                 ))}
+                <div className="flex flex-row flex-wrap gap-1.5">
+                    {newNodeTags.map((tagId) => (
+                        <TagPill
+                            key={tagId}
+                            tag={graph.getTag(tagId)!}
+                            onDelete={() => {
+                                setNewNodeTags(
+                                    newNodeTags.filter((tag) => tag !== tagId)
+                                );
+                            }}
+                        />
+                    ))}
+                    <select
+                        className="rounded-full bg-zinc-200 px-2 py-0.5 hover:bg-zinc-200  active:bg-zinc-300"
+                        onChange={(e) => {
+                            setNewNodeTags([
+                                ...newNodeTags,
+                                Number.parseInt(e.target.value),
+                            ]);
+                        }}
+                        value="">
+                        {graph.tags
+                            .filter((tag) => !newNodeTags.includes(tag.id))
+                            .map((tag) => (
+                                <option key={tag.id} value={tag.id}>
+                                    {tag.name}
+                                </option>
+                            ))}
+                        <option value={''}>Add Tag</option>
+                    </select>
+                </div>
                 <div>
                     <Button type="submit">Add Node</Button>
                 </div>

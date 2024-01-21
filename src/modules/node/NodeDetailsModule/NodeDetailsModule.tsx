@@ -12,6 +12,7 @@ import DeleteNodeCommand from '../../../Command/DeleteNodeCommand';
 import ConfirmModal from '../../../components/ConfirmModal';
 import NewLinkModule from '../../link/NewLinkModule';
 import LinkListModule from '../../link/LinkListModule';
+import NewNodeModule from '../NewNodeModule';
 
 interface INodeDetailsProps {
     node: INode;
@@ -38,6 +39,8 @@ export default function NodeDetailsModule({
     const [isNewLinkModalOpen, setIsNewLinkModalOpen] =
         useState<boolean>(false);
     const [isLinkListModalOpen, setIsLinkListModalOpen] =
+        useState<boolean>(false);
+    const [isNewNodeModalOpen, setIsNewNodeModalOpen] =
         useState<boolean>(false);
 
     const relatedComments = useMemo(
@@ -87,16 +90,23 @@ export default function NodeDetailsModule({
                     e.preventDefault();
                     handleSave();
                 }}>
-                <label>
-                    Name:
-                    <input
-                        type="text"
-                        value={editNodeName}
-                        onChange={(event) =>
-                            setEditNodeName(event.target.value)
-                        }
-                    />
-                </label>
+                <div className="flex w-full items-center justify-between">
+                    <label className="text-xl">
+                        Name:
+                        <input
+                            type="text"
+                            value={editNodeName}
+                            onChange={(event) =>
+                                setEditNodeName(event.target.value)
+                            }
+                        />
+                    </label>
+                    <Button
+                        type="button"
+                        onClick={() => setIsNewNodeModalOpen(true)}>
+                        Copy
+                    </Button>
+                </div>
                 <div>Attributes:</div>
                 {editNodeAttributes.map(([key, value], index) => (
                     <div key={index} className="">
@@ -228,6 +238,11 @@ export default function NodeDetailsModule({
                     </Button>
                 </div>
             </form>
+            <Modal
+                isOpen={isNewNodeModalOpen}
+                onDismiss={() => setIsNewNodeModalOpen(false)}>
+                <NewNodeModule original={node} />
+            </Modal>
             <Modal
                 isOpen={isLinkListModalOpen}
                 onDismiss={() => setIsLinkListModalOpen(false)}>

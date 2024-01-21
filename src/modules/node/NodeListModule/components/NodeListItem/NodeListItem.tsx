@@ -10,6 +10,7 @@ import ConfirmModal from '../../../../../components/ConfirmModal';
 import NodeDetailsModule from '../../../NodeDetailsModule/NodeDetailsModule';
 import NewLinkModule from '../../../../link/NewLinkModule';
 import LinkListModule from '../../../../link/LinkListModule';
+import NewNodeModule from '../../../NewNodeModule';
 
 interface INodeListItemProps {
     node: INode;
@@ -32,6 +33,8 @@ export default function NodeListItem({
         useState<boolean>(false);
     const [isLinkListModalOpen, setIsLinkListModalOpen] =
         useState<boolean>(false);
+    const [isNewNodeModalOpen, setIsNewNodeModalOpen] =
+        useState<boolean>(false);
 
     const relatedComments = useMemo(
         () => graph.comments.filter((comment) => comment.targetId === node.id),
@@ -50,12 +53,15 @@ export default function NodeListItem({
         <>
             <div className="my-2 rounded-xl bg-slate-200 p-2">
                 <div className="rounded-lg bg-white p-1.5">
-                    <div>
+                    <div className="flex justify-between">
                         <Button
                             onClick={() => {
                                 setIsEditModalOpen(true);
                             }}>
                             {node.id} {node.name}
+                        </Button>
+                        <Button onClick={() => setIsNewNodeModalOpen(true)}>
+                            Copy
                         </Button>
                     </div>
                     <Button onClick={() => setIsLinkListModalOpen(true)}>
@@ -92,6 +98,11 @@ export default function NodeListItem({
                     </div>
                 </div>
             </div>
+            <Modal
+                isOpen={isNewNodeModalOpen}
+                onDismiss={() => setIsNewNodeModalOpen(false)}>
+                <NewNodeModule original={node} />
+            </Modal>
             <Modal
                 isOpen={isEditModalOpen}
                 onDismiss={() => {

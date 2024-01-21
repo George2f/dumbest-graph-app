@@ -28,7 +28,6 @@ export default function Root({ children }: { children: ReactNode }) {
                     onDismiss={() => setIsNewNodeModalOpen(false)}>
                     <NewNodeModule />
                 </Modal>
-
                 <Modal
                     isOpen={isNewLinkModalOpen}
                     onDismiss={() => setIsNewLinkModalOpen(false)}>
