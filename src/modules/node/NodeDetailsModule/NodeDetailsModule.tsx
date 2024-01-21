@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import INode from '../../../types/INode';
 import Button from '../../../components/Button';
 import TagPill from '../../../components/TagPill';
@@ -10,17 +10,17 @@ import { useHistory } from '../../../providers/HistoryProvider';
 import EditNodeCommand from '../../../Command/EditNodeCommand';
 import DeleteNodeCommand from '../../../Command/DeleteNodeCommand';
 import ConfirmModal from '../../../components/ConfirmModal';
+import NewLinkModule from '../../link/NewLinkModule';
+import LinkListModule from '../../link/LinkListModule';
 
 interface INodeDetailsProps {
     node: INode;
     onChange?: () => void;
-    onDelete?: () => void;
 }
 
 export default function NodeDetailsModule({
     node,
     onChange,
-    onDelete,
 }: INodeDetailsProps) {
     const graph = useGraph();
     const history = useHistory();
@@ -36,9 +36,22 @@ export default function NodeDetailsModule({
         useState<boolean>(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] =
         useState<boolean>(false);
+    const [isNewLinkModalOpen, setIsNewLinkModalOpen] =
+        useState<boolean>(false);
+    const [isLinkListModalOpen, setIsLinkListModalOpen] =
+        useState<boolean>(false);
 
-    const relatedComments = graph.comments.filter(
-        (comment) => comment.targetId === node.id
+    const relatedComments = useMemo(
+        () => graph.comments.filter((comment) => comment.targetId === node.id),
+        [graph, node.id]
+    );
+
+    const relatedLinks = useMemo(
+        () =>
+            graph.links.filter(
+                (link) => link.node1Id === node.id || link.node2Id === node.id
+            ),
+        [graph, node.id]
     );
 
     const handleSave = useCallback(() => {
@@ -203,12 +216,38 @@ export default function NodeDetailsModule({
                     <Button
                         onClick={(e) => {
                             e.preventDefault();
+                            setIsLinkListModalOpen(true);
+                        }}>
+                        Links {relatedLinks.length}
+                    </Button>
+                    <Button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setIsNewLinkModalOpen(true);
+                        }}>
+                        New Link
+                    </Button>
+                    <Button
+                        onClick={(e) => {
+                            e.preventDefault();
                             setIsConfirmModalOpen(true);
                         }}>
                         Delete
                     </Button>
                 </div>
             </form>
+            <Modal
+                isOpen={isLinkListModalOpen}
+                onDismiss={() => setIsLinkListModalOpen(false)}>
+                <div className="max-h-96 overflow-y-scroll">
+                    <LinkListModule node={node} />
+                </div>
+            </Modal>
+            <Modal
+                isOpen={isNewLinkModalOpen}
+                onDismiss={() => setIsNewLinkModalOpen(false)}>
+                <NewLinkModule node1={node} />
+            </Modal>
             <Modal
                 isOpen={isCommentListModalOpen}
                 onDismiss={() => setIsCommentListModalOpen(false)}>
@@ -227,7 +266,7 @@ export default function NodeDetailsModule({
                     command.execute();
                     history.push(command);
                     setIsConfirmModalOpen(false);
-                    onDelete?.();
+                    onChange?.();
                 }}
                 onDismiss={() => setIsConfirmModalOpen(false)}>
                 Are you sure you want to delete this node?

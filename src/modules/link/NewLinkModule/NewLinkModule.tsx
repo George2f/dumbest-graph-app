@@ -28,7 +28,7 @@ export default function NewLinkModule({ node1 }: INewLinkModuleProps) {
             <h3>New Link</h3>
             <h4>Choose a node</h4>
             <select
-                autoFocus
+                autoFocus={!node1}
                 onChange={(event) => {
                     setNewLinkNode1(
                         graph.nodes.find(
@@ -46,6 +46,7 @@ export default function NewLinkModule({ node1 }: INewLinkModuleProps) {
             </select>
             <h4>And another one</h4>
             <select
+                autoFocus={!!node1}
                 onChange={(event) => {
                     setNewLinkNode2(
                         graph.nodes.find(

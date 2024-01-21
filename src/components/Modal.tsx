@@ -26,7 +26,10 @@ export default function Modal({
                 className="fixed left-0 top-0 z-0 h-full w-full bg-black opacity-20"
                 onClick={onDismiss}></button>
             <div
-                className={clsx('z-10 bg-slate-200 p-1 shadow-2xl', className)}>
+                className={clsx(
+                    'z-10 max-h-full bg-slate-200 p-1 shadow-2xl',
+                    className
+                )}>
                 <div className="rounded-md bg-white p-1.5 shadow-inner">
                     {children}
                 </div>

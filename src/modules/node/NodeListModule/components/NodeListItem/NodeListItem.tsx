@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import IGraph from '../../../../../types/IGraph';
 import INode from '../../../../../types/INode';
 import TagPill from '../../../../../components/TagPill';
@@ -8,6 +8,8 @@ import NewCommentModule from '../../../../comment/NewCommentModule';
 import CommentListModule from '../../../../comment/CommentListModule/CommentListModule';
 import ConfirmModal from '../../../../../components/ConfirmModal';
 import NodeDetailsModule from '../../../NodeDetailsModule/NodeDetailsModule';
+import NewLinkModule from '../../../../link/NewLinkModule';
+import LinkListModule from '../../../../link/LinkListModule';
 
 interface INodeListItemProps {
     node: INode;
@@ -26,20 +28,44 @@ export default function NodeListItem({
     const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] =
         useState<boolean>(false);
+    const [isNewLinkModalOpen, setIsNewLinkModalOpen] =
+        useState<boolean>(false);
+    const [isLinkListModalOpen, setIsLinkListModalOpen] =
+        useState<boolean>(false);
 
-    const relatedComments = graph.comments.filter(
-        (comment) => comment.targetId === node.id
+    const relatedComments = useMemo(
+        () => graph.comments.filter((comment) => comment.targetId === node.id),
+        [graph, node.id]
+    );
+
+    const relatedLinks = useMemo(
+        () =>
+            graph.links.filter(
+                (link) => link.node1Id === node.id || link.node2Id === node.id
+            ),
+        [graph, node.id]
     );
 
     return (
         <>
             <div className="my-2 rounded-xl bg-slate-200 p-2">
                 <div className="rounded-lg bg-white p-1.5">
+                    <div>
+                        <Button
+                            onClick={() => {
+                                setIsEditModalOpen(true);
+                            }}>
+                            {node.id} {node.name}
+                        </Button>
+                    </div>
+                    <Button onClick={() => setIsLinkListModalOpen(true)}>
+                        Links {relatedLinks.length}
+                    </Button>
                     <Button
                         onClick={() => {
-                            setIsEditModalOpen(true);
+                            setIsNewLinkModalOpen(true);
                         }}>
-                        {node.id} {node.name}
+                        New Link
                     </Button>
                     <Button
                         onClick={() => {
@@ -74,8 +100,12 @@ export default function NodeListItem({
                 <NodeDetailsModule
                     node={node}
                     onChange={() => setIsEditModalOpen(false)}
-                    onDelete={() => setIsEditModalOpen(false)}
                 />
+            </Modal>
+            <Modal
+                isOpen={isNewLinkModalOpen}
+                onDismiss={() => setIsNewLinkModalOpen(false)}>
+                <NewLinkModule node1={node} />
             </Modal>
             <NewCommentModule
                 isOpen={isNewCommentOpen}
@@ -85,7 +115,16 @@ export default function NodeListItem({
             <Modal
                 isOpen={isCommentListModalOpen}
                 onDismiss={() => setIsCommentListModalOpen(false)}>
-                <CommentListModule node={node} />
+                <div className="max-h-96 overflow-y-scroll">
+                    <CommentListModule node={node} />
+                </div>
+            </Modal>
+            <Modal
+                isOpen={isLinkListModalOpen}
+                onDismiss={() => setIsLinkListModalOpen(false)}>
+                <div className="max-h-96 overflow-y-scroll">
+                    <LinkListModule node={node} />
+                </div>
             </Modal>
             <ConfirmModal
                 isOpen={isConfirmModalOpen}

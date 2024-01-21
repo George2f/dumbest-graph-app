@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import ILink from '../../../../../types/ILink';
 import generateLinkName from '../../../../../utils/parseLinkName';
 import INode from '../../../../../types/INode';
@@ -9,12 +9,12 @@ import IGraph from '../../../../../types/IGraph';
 import NewCommentModule from '../../../../comment/NewCommentModule';
 import CommentListModule from '../../../../comment/CommentListModule';
 import ConfirmModal from '../../../../../components/ConfirmModal';
+import NodeDetailsModule from '../../../../node/NodeDetailsModule';
 
 interface ILinkListItemProps {
     link: ILink;
     onDelete: () => void;
     onChange: (link: ILink) => void;
-    nodes: INode[];
     graph: IGraph;
 }
 
@@ -22,7 +22,6 @@ export default function LinkListItem({
     link,
     onDelete,
     onChange,
-    nodes,
     graph,
 }: ILinkListItemProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,25 +30,26 @@ export default function LinkListItem({
     const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] =
         useState<boolean>(false);
+    const [isNodeDetailsModalOpen, setIsNodeDetailsModalOpen] =
+        useState<boolean>(false);
+    const [selectedNode, setSelectedNode] = useState<INode | undefined>();
 
     const relatedComments = graph.comments.filter(
         (comment) => comment.targetId === link.id
     );
 
+    const node1 = useMemo(
+        () => graph.nodes.find((n) => n.id === link.node1Id),
+        [graph, link.node1Id]
+    );
+
+    const node2 = useMemo(
+        () => graph.nodes.find((n) => n.id === link.node2Id),
+        [graph, link.node2Id]
+    );
+
     return (
         <>
-            <Modal isOpen={isModalOpen} onDismiss={() => setIsModalOpen(false)}>
-                <EditLink
-                    link={link}
-                    onChange={(link) => {
-                        onChange(link);
-                        setIsModalOpen(false);
-                    }}
-                    onDelete={() => setIsConfirmModalOpen(true)}
-                    nodes={nodes}
-                    active={isModalOpen}
-                />
-            </Modal>
             <div className="my-2 rounded-xl bg-slate-200 p-2">
                 <div className="rounded-lg bg-white p-1.5">
                     <div>
@@ -60,11 +60,25 @@ export default function LinkListItem({
                             {link.id}{' '}
                             {generateLinkName(
                                 link,
-                                nodes.find((n) => n.id === link.node1Id)
-                                    ?.name || '',
-                                nodes.find((n) => n.id === link.node2Id)
-                                    ?.name || ''
+                                node1?.name || '',
+                                node2?.name || ''
                             )}
+                        </Button>
+                    </div>
+                    <div>
+                        <Button
+                            onClick={() => {
+                                setSelectedNode(node1);
+                                setIsNodeDetailsModalOpen(true);
+                            }}>
+                            {node1?.id} {node1?.name}
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setSelectedNode(node2);
+                                setIsNodeDetailsModalOpen(true);
+                            }}>
+                            {node2?.id} {node2?.name}
                         </Button>
                         <Button onClick={() => setIsConfirmModalOpen(true)}>
                             Delete
@@ -84,6 +98,28 @@ export default function LinkListItem({
                     </div>
                 </div>
             </div>
+            <Modal isOpen={isModalOpen} onDismiss={() => setIsModalOpen(false)}>
+                <EditLink
+                    link={link}
+                    onChange={(link) => {
+                        onChange(link);
+                        setIsModalOpen(false);
+                    }}
+                    onDelete={() => setIsConfirmModalOpen(true)}
+                    nodes={graph.nodes}
+                    active={isModalOpen}
+                />
+            </Modal>
+            <Modal
+                isOpen={isNodeDetailsModalOpen}
+                onDismiss={() => setIsNodeDetailsModalOpen(false)}>
+                {selectedNode ? (
+                    <NodeDetailsModule
+                        node={selectedNode}
+                        onChange={() => setIsNodeDetailsModalOpen(false)}
+                    />
+                ) : null}
+            </Modal>
             <NewCommentModule
                 isOpen={isNewCommentOpen}
                 link={link}

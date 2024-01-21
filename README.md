@@ -6,8 +6,8 @@
 - tailwind - done
 - attributes - done
 - Quality of Life
-  - link from node
-  - link list from node
+  - link from node - done
+  - link list from node - done
   - add tag on click
   - filter node list by tag
   - anchored header - done
