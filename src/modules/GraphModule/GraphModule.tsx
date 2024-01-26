@@ -33,67 +33,141 @@ export default function GraphModule() {
 
     const graphData = useMemo(() => {
         const linkPairs: number[][] = [];
+
+        const orphanNodes = nodes.filter(
+            (node) =>
+                !links.some(
+                    (link) =>
+                        link.node1Id === node.id || link.node2Id === node.id
+                )
+        );
+
+        //an extra node to collect all orphan nodes, make them a bit further away from the first node
+        const orphanCollector: {
+            id: number;
+            label: string;
+            x: number;
+            y: number;
+            group: string | number;
+            name: string;
+            orphanCollector?: boolean;
+        } = {
+            id: 0, // only one with id 0
+            label: '',
+            x: 0,
+            y: 0,
+            group: 0,
+            name: '',
+            orphanCollector: true,
+        };
+
         return {
-            nodes: nodes.map((node) => {
-                return {
-                    id: node.id,
-                    label: node.name,
-                    x: 0,
-                    y: 0,
-                    group: node.tags?.[0] || (Math.random() * -100).toString(),
-                    name:
-                        comments.find((c) => c.targetId === node.id)?.text ||
-                        '',
-                };
-            }),
-            links: links.map((link) => {
-                const label =
-                    link.type === LINK_TYPE_ENUM.BOTH_WAYS
-                        ? generateLinkName(
-                              {
-                                  ...link,
-                              },
-                              '',
-                              ''
-                          )
-                        : link.name;
+            nodes: nodes
+                .map((node) => {
+                    return {
+                        id: node.id,
+                        label: node.name,
+                        x: 0,
+                        y: 0,
+                        group:
+                            node.tags?.[0] || (Math.random() * -100).toString(),
+                        name:
+                            comments.find((c) => c.targetId === node.id)
+                                ?.text || '',
+                    };
+                })
+                .concat([orphanCollector]),
+            links: links
+                .map((link) => {
+                    const label =
+                        link.type === LINK_TYPE_ENUM.BOTH_WAYS
+                            ? generateLinkName(
+                                  {
+                                      ...link,
+                                  },
+                                  '',
+                                  ''
+                              )
+                            : link.name;
 
-                const firstNode = Math.min(link.node1Id, link.node2Id);
-                const secondNode = Math.max(link.node1Id, link.node2Id);
-                const timesFound = linkPairs.filter(
-                    (pair) => pair[0] === firstNode && pair[1] === secondNode
-                ).length;
-                linkPairs.push([firstNode, secondNode]);
+                    const firstNode = Math.min(link.node1Id, link.node2Id);
+                    const secondNode = Math.max(link.node1Id, link.node2Id);
+                    const timesFound = linkPairs.filter(
+                        (pair) =>
+                            pair[0] === firstNode && pair[1] === secondNode
+                    ).length;
+                    linkPairs.push([firstNode, secondNode]);
 
-                const linkComments = comments.filter(
-                    (c) => c.targetId === link.id
-                );
+                    const linkComments = comments.filter(
+                        (c) => c.targetId === link.id
+                    );
 
-                return {
-                    id: link.id,
-                    source: { id: link.node1Id, x: 0, y: 0 },
-                    sourceId: link.node1Id,
-                    target: { id: link.node2Id, x: 0, y: 0 },
-                    targetId: link.node2Id,
-                    label:
-                        label +
-                        (linkComments.length ? ` *${linkComments.length}` : ''),
-                    name:
-                        linkComments.reduce(
-                            (prev, c, i) => `${prev}#${i + 1} ${c.text}; `,
-                            ''
-                        ) ||
-                        (link.node1Id === link.node2Id
-                            ? generateLinkName(link, '', '')
-                            : ''),
-                    comments: linkComments,
-                    type: link.type,
-                    curvature:
-                        link.node1Id === link.node2Id
-                            ? 0.3 + timesFound * 0.1
-                            : timesFound * 0.15,
-                };
-            }),
+                    return {
+                        id: link.id,
+                        source: { id: link.node1Id, x: 0, y: 0 },
+                        sourceId: link.node1Id,
+                        target: { id: link.node2Id, x: 0, y: 0 },
+                        targetId: link.node2Id,
+                        label:
+                            label +
+                            (linkComments.length
+                                ? ` *${linkComments.length}`
+                                : ''),
+                        name:
+                            linkComments.reduce(
+                                (prev, c, i) => `${prev}#${i + 1} ${c.text}; `,
+                                ''
+                            ) ||
+                            (link.node1Id === link.node2Id
+                                ? generateLinkName(link, '', '')
+                                : ''),
+                        comments: linkComments,
+                        type: link.type,
+                        curvature:
+                            link.node1Id === link.node2Id
+                                ? 0.3 + timesFound * 0.1
+                                : timesFound * 0.15,
+                    };
+                })
+                .concat([
+                    {
+                        id: orphanCollector.id,
+                        source: { id: orphanCollector.id, x: 0, y: 0 },
+                        sourceId: orphanCollector.id,
+                        target: {
+                            id: nodes[0]?.id || orphanCollector.id,
+                            x: 0,
+                            y: 0,
+                        },
+                        targetId: nodes[0]?.id || orphanCollector.id,
+                        label: '',
+                        name: '',
+                        comments: [],
+                        type: LINK_TYPE_ENUM.SIMPLE,
+                        curvature: 0,
+                        //@ts-expect-error: custom attribute
+                        orphan: true,
+                    },
+                ])
+                .concat(
+                    orphanNodes.map((node) => ({
+                        id: -1 * node.id, // negative id to avoid conflicts with node id
+                        source: { id: node.id, x: 0, y: 0 },
+                        sourceId: node.id,
+                        target: {
+                            id: orphanCollector.id,
+                            x: 0,
+                            y: 0,
+                        },
+                        targetId: orphanCollector.id,
+                        label: '',
+                        name: '',
+                        comments: [],
+                        type: LINK_TYPE_ENUM.SIMPLE,
+                        curvature: 0,
+                        orphan: true,
+                    }))
+                ),
         };
     }, [nodes, links, comments]);
 
@@ -167,6 +241,8 @@ export default function GraphModule() {
                     const isSelected = selectedNode === node.id;
                     const isRelated = relatedNodes.includes(node.id);
 
+                    if (node.orphanCollector) return;
+
                     const label = node.label;
                     const fontSize =
                         isHighlighted || isSelected || isRelated ? 3.6 : 3.1;
@@ -239,6 +315,10 @@ export default function GraphModule() {
                     link.type === LINK_TYPE_ENUM.A_TO_B ? 1 : 0
                 }
                 linkDirectionalArrowRelPos={0.8}
+                linkColor={(link) => {
+                    if (link.orphan) return 'transparent';
+                    return 'lightGrey';
+                }}
                 linkCanvasObject={(
                     link: {
                         id: number;
@@ -247,6 +327,7 @@ export default function GraphModule() {
                         label: string;
                         curvature: number;
                         type: LINK_TYPE_ENUM;
+                        orphan?: boolean;
                     },
                     ctx
                 ) => {
@@ -254,6 +335,8 @@ export default function GraphModule() {
                     const target = link.target;
 
                     const label = link.label;
+
+                    if (link.orphan) return;
 
                     // estimate fontSize to fit in link length
                     ctx.font = '1px Sans-Serif';

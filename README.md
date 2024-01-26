@@ -17,7 +17,7 @@
 
 ## TODO 2
 
-- collect orphan nodes on the graph
+- collect orphan nodes on the graph - done
 - give a code to the graph so you can have multiple at the same time
 - persist graph through backend
 - make header pretty
