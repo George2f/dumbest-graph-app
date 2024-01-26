@@ -5,6 +5,8 @@ import IdType from './IdType';
 import ITag from './ITag';
 
 export default interface IGraph {
+    graphId: string;
+    setGraphId: (id: string) => void;
     getNewId: () => IdType;
     nodes: INode[];
     links: ILink[];

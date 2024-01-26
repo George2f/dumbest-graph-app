@@ -1,19 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import INode from '../../types/INode';
 import ILink from '../../types/ILink';
 import IComment from '../../types/IComment';
 import IdType from '../../types/IdType';
 import IGraph from '../../types/IGraph';
 import ITag from '../../types/ITag';
+import { useGraphPersistence } from '../../contexts/GraphPersistenceContext';
+import debounce from '../../utils/debounce';
 
 const GraphContext = React.createContext<IGraph>({} as IGraph);
 
 interface IGraphProviderProps {
     children: React.ReactNode;
+    defaultGraphId: string;
 }
 
-export default function GraphProvider({ children }: IGraphProviderProps) {
+export default function GraphProvider({
+    children,
+    defaultGraphId,
+}: IGraphProviderProps) {
+    const { saveGraph, loadGraph } = useGraphPersistence();
     const [initialized, setInitialized] = React.useState(false);
+    const [graphId, setGraphId] = React.useState(defaultGraphId || 'graph');
     const [nextId, setNextId] = React.useState<IdType>(1);
     const [nodes, setNodes] = React.useState<INode[]>([]);
     const [links, setLinks] = React.useState<ILink[]>([]);
@@ -48,29 +56,34 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
         []
     );
 
+    const persistGraph = useMemo(() => debounce(saveGraph, 1000), [saveGraph]);
+
     useEffect(() => {
-        const graph = localStorage.getItem('graph');
-        if (graph) {
-            const { nodes, links, comments, tags } = JSON.parse(graph);
-            initGraph({
-                nodes: nodes || [],
-                links: links || [],
-                comments: comments || [],
-                tags: tags || [],
-            });
+        const loadedGraph = loadGraph({ name: graphId });
+        if (loadedGraph) {
+            initGraph(loadedGraph);
         }
         setInitialized(true);
-    }, [initGraph]);
+    }, [graphId, initGraph, loadGraph]);
 
     useEffect(() => {
         if (!initialized) return;
-        localStorage.setItem(
-            'graph',
-            JSON.stringify({ nodes, links, comments, tags })
-        );
-    }, [nodes, links, comments, initialized, tags]);
+        persistGraph({
+            name: graphId,
+            graph: { nodes, links, comments, tags },
+        });
+    }, [
+        nodes,
+        links,
+        comments,
+        initialized,
+        tags,
+        saveGraph,
+        graphId,
+        persistGraph,
+    ]);
 
-    const clearGraph = React.useCallback(() => {
+    const handleClearGraph = React.useCallback(() => {
         setNodes([]);
         setLinks([]);
         setComments([]);
@@ -221,7 +234,7 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 comments,
                 tags,
                 initGraph,
-                clearGraph,
+                clearGraph: handleClearGraph,
                 addNode: handleAddNode,
                 addComment: handleAddComment,
                 addLink: handleAddLink,
@@ -238,6 +251,8 @@ export default function GraphProvider({ children }: IGraphProviderProps) {
                 getLink,
                 getComment,
                 getTag,
+                graphId,
+                setGraphId,
             }}>
             {children}
         </GraphContext.Provider>
