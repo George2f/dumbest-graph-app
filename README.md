@@ -17,9 +17,18 @@
 
 ## TODO 2
 
+- collect orphan nodes on the graph
+- give a code to the graph so you can have multiple at the same time
+- persist graph through backend
+- make header pretty
 - make filter select better
 - make id numbers smaller
-- make header pretty
+- make new node pretty
+- make edit node pretty
 - make node list pretty
+- make new link pretty
+- make edit link pretty
 - make link list pretty
+- make new tag pretty
+- make edit tag pretty
 - make tag list pretty
