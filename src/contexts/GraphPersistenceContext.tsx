@@ -6,10 +6,10 @@ import ITag from '../types/ITag';
 
 interface IGraphPersistenceContextValue {
     saveGraph: ({
-        name,
+        id,
         graph: { nodes, links, comments, tags },
     }: {
-        name: string;
+        id: string;
         graph: {
             nodes: INode[];
             links: ILink[];
@@ -17,7 +17,7 @@ interface IGraphPersistenceContextValue {
             tags: ITag[];
         };
     }) => void;
-    loadGraph: ({ name }: { name: string }) =>
+    loadGraph: ({ id }: { id: string }) =>
         | {
               nodes: INode[];
               links: ILink[];
@@ -25,7 +25,7 @@ interface IGraphPersistenceContextValue {
               tags: ITag[];
           }
         | undefined;
-    clearGraph: ({ name }: { name: string }) => void;
+    clearGraph: ({ id }: { id: string }) => void;
 }
 
 const GraphPersistenceContext =

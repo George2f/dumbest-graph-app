@@ -14,10 +14,10 @@ export default function LocalStoragePersistenceProvider({
 }: IGraphPersistenceProviderProps) {
     const handleSaveGraph = useCallback(
         ({
-            name,
+            id,
             graph,
         }: {
-            name: string;
+            id: string;
             graph: {
                 nodes: INode[];
                 links: ILink[];
@@ -26,14 +26,14 @@ export default function LocalStoragePersistenceProvider({
             };
         }) => {
             console.debug('Saving graph');
-            localStorage.setItem(name, JSON.stringify(graph));
+            localStorage.setItem(id, JSON.stringify(graph));
         },
         []
     );
 
-    const handleLoadGraph = useCallback(({ name }: { name: string }) => {
+    const handleLoadGraph = useCallback(({ id }: { id: string }) => {
         console.debug('Loading graph');
-        const graph = localStorage.getItem(name);
+        const graph = localStorage.getItem(id);
         if (graph) {
             const { nodes, links, comments, tags } = JSON.parse(graph);
             return {
@@ -46,9 +46,9 @@ export default function LocalStoragePersistenceProvider({
         return undefined;
     }, []);
 
-    const handleClearGraph = useCallback(({ name }: { name: string }) => {
+    const handleClearGraph = useCallback(({ id }: { id: string }) => {
         console.debug('Clearing graph');
-        localStorage.removeItem(name);
+        localStorage.removeItem(id);
     }, []);
 
     return (

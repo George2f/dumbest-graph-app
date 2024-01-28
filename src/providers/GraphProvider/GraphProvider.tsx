@@ -7,6 +7,7 @@ import IGraph from '../../types/IGraph';
 import ITag from '../../types/ITag';
 import { useGraphPersistence } from '../../contexts/GraphPersistenceContext';
 import debounce from '../../utils/debounce';
+import useMount from '../../utils/useMount';
 
 const GraphContext = React.createContext<IGraph>({} as IGraph);
 
@@ -20,7 +21,7 @@ export default function GraphProvider({
     defaultGraphId,
 }: IGraphProviderProps) {
     const { saveGraph, loadGraph } = useGraphPersistence();
-    const [initialized, setInitialized] = React.useState(false);
+    const [locked, setLocked] = React.useState(true);
     const [graphId, setGraphId] = React.useState(defaultGraphId || 'graph');
     const [nextId, setNextId] = React.useState<IdType>(1);
     const [nodes, setNodes] = React.useState<INode[]>([]);
@@ -58,25 +59,25 @@ export default function GraphProvider({
 
     const persistGraph = useMemo(() => debounce(saveGraph, 1000), [saveGraph]);
 
-    useEffect(() => {
-        const loadedGraph = loadGraph({ name: graphId });
+    useMount(() => {
+        const loadedGraph = loadGraph({ id: graphId });
         if (loadedGraph) {
             initGraph(loadedGraph);
         }
-        setInitialized(true);
-    }, [graphId, initGraph, loadGraph]);
+        setLocked(false);
+    });
 
     useEffect(() => {
-        if (!initialized) return;
+        if (locked) return;
         persistGraph({
-            name: graphId,
+            id: graphId,
             graph: { nodes, links, comments, tags },
         });
     }, [
         nodes,
         links,
         comments,
-        initialized,
+        locked,
         tags,
         saveGraph,
         graphId,
@@ -89,6 +90,21 @@ export default function GraphProvider({
         setComments([]);
         setTags([]);
     }, []);
+
+    const handleSetGraphId = React.useCallback(
+        (newId: string) => {
+            setLocked(true);
+            const graph = loadGraph({ id: newId });
+            setGraphId(newId);
+            if (graph) {
+                initGraph(graph);
+            } else {
+                handleClearGraph();
+            }
+            setLocked(false);
+        },
+        [handleClearGraph, initGraph, loadGraph]
+    );
 
     const getNewId = React.useCallback(() => {
         setNextId((prevId) => prevId + 1);
@@ -252,7 +268,7 @@ export default function GraphProvider({
                 getComment,
                 getTag,
                 graphId,
-                setGraphId,
+                setGraphId: handleSetGraphId,
             }}>
             {children}
         </GraphContext.Provider>
