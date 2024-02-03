@@ -11,6 +11,7 @@ import NodeDetailsModule from '../../../NodeDetailsModule/NodeDetailsModule';
 import NewLinkModule from '../../../../link/NewLinkModule';
 import LinkListModule from '../../../../link/LinkListModule';
 import NewNodeModule from '../../../NewNodeModule';
+import NodeNameButton from '../../../../../components/NodeNameButton';
 
 interface INodeListItemProps {
     node: INode;
@@ -54,12 +55,12 @@ export default function NodeListItem({
             <div className="my-2 rounded-xl bg-slate-200 p-2">
                 <div className="rounded-lg bg-white p-1.5">
                     <div className="flex justify-between">
-                        <Button
+                        <NodeNameButton
+                            node={node}
                             onClick={() => {
                                 setIsEditModalOpen(true);
-                            }}>
-                            {node.id} {node.name}
-                        </Button>
+                            }}
+                        />
                         <Button onClick={() => setIsNewNodeModalOpen(true)}>
                             Copy
                         </Button>

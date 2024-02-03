@@ -13,7 +13,7 @@ export default function TagPill({
     return (
         <div className="flex h-8 flex-row items-center gap-1 rounded-full bg-slate-200 px-2 py-0.5 hover:bg-slate-100 active:bg-slate-300">
             <button onClick={onEdit}>
-                <span className="text-xs">{tag.id}</span>{' '}
+                <span className="text-[10px]">{tag.id}</span>{' '}
                 <span className="text-sm">{tag.name}</span>{' '}
                 <ColorSquare color={tag.color} />
             </button>

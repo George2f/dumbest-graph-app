@@ -19,6 +19,8 @@
 
 - collect orphan nodes on the graph - done
 - give an id to the graph so you can have multiple at the same time - done
+- show how much nodes remain after filter - done
+- fix filter toggle button - done
 - persist graph through backend
 - make header pretty
 - make filter select better

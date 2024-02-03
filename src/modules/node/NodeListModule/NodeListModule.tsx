@@ -5,7 +5,7 @@ import NodeListItem from './components/NodeListItem';
 import { useMemo, useState } from 'react';
 import TagPill from '../../../components/TagPill';
 import Button from '../../../components/Button';
-import clsx from 'clsx';
+import { cn } from '../../../utils/cn';
 
 export default function NodeListModule() {
     const graph = useGraph();
@@ -29,10 +29,10 @@ export default function NodeListModule() {
 
     return (
         <>
-            <div className=" ml-2 mt-2 flex flex-row flex-wrap gap-1.5">
+            <div className=" ml-2 mr-2 mt-2 flex flex-row flex-wrap gap-1.5">
                 {filterTags.length > 0 ? (
                     <Button
-                        className={clsx('px-4 py-0', {
+                        className={cn('px-4 py-0', {
                             ['bg-green-300']: isFilterCross,
                         })}
                         onClick={() => setIsFilterCross((prev) => !prev)}>
@@ -50,6 +50,7 @@ export default function NodeListModule() {
                         }}
                     />
                 ))}
+
                 <select
                     className="rounded-full bg-zinc-200 px-2 py-0.5 hover:bg-zinc-200  active:bg-zinc-300"
                     onChange={(e) => {
@@ -71,6 +72,9 @@ export default function NodeListModule() {
                     </option>
                 </select>
             </div>
+            {filterTags.length > 0 ? (
+                <div className="mx-3">{displayedNodes.length} found</div>
+            ) : null}
             <ul className="grid grid-cols-1 gap-2 overflow-y-auto md:grid-cols-2 lg:grid-cols-3">
                 {displayedNodes.map((node) => (
                     <li key={node.id}>

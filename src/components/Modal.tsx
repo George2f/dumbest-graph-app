@@ -1,5 +1,5 @@
-import clsx from 'clsx';
 import { ReactNode } from 'react';
+import { cn } from '../utils/cn';
 
 interface IModalProps {
     children: ReactNode;
@@ -19,14 +19,14 @@ export default function Modal({
     }
     return (
         <div
-            className={clsx(
+            className={cn(
                 'fixed left-0 top-0 z-50 flex h-full w-full flex-row items-center justify-center'
             )}>
             <button
                 className="fixed left-0 top-0 z-0 h-full w-full bg-black opacity-20"
                 onClick={onDismiss}></button>
             <div
-                className={clsx(
+                className={cn(
                     'z-10 max-h-full bg-slate-200 p-1 shadow-2xl',
                     className
                 )}>

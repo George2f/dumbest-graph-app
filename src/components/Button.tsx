@@ -1,5 +1,5 @@
-import clsx from 'clsx';
 import { ButtonHTMLAttributes } from 'react';
+import { cn } from '../utils/cn';
 
 export default function Button({
     children,
@@ -8,7 +8,7 @@ export default function Button({
 }: ButtonHTMLAttributes<HTMLButtonElement>) {
     return (
         <button
-            className={clsx(
+            className={cn(
                 'm-1 bg-slate-200 p-1 hover:bg-green-100 active:bg-green-200',
                 className
             )}

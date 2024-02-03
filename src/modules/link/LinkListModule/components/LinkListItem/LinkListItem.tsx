@@ -10,6 +10,7 @@ import NewCommentModule from '../../../../comment/NewCommentModule';
 import CommentListModule from '../../../../comment/CommentListModule';
 import ConfirmModal from '../../../../../components/ConfirmModal';
 import NodeDetailsModule from '../../../../node/NodeDetailsModule';
+import NodeNameButton from '../../../../../components/NodeNameButton';
 
 interface ILinkListItemProps {
     link: ILink;
@@ -57,7 +58,7 @@ export default function LinkListItem({
                             onClick={() => {
                                 setIsModalOpen(true);
                             }}>
-                            {link.id}{' '}
+                            <small>{link.id}</small>{' '}
                             {generateLinkName(
                                 link,
                                 node1?.name || '',
@@ -66,20 +67,20 @@ export default function LinkListItem({
                         </Button>
                     </div>
                     <div>
-                        <Button
+                        <NodeNameButton
+                            node={node1}
                             onClick={() => {
                                 setSelectedNode(node1);
                                 setIsNodeDetailsModalOpen(true);
-                            }}>
-                            {node1?.id} {node1?.name}
-                        </Button>
-                        <Button
+                            }}
+                        />
+                        <NodeNameButton
+                            node={node2}
                             onClick={() => {
                                 setSelectedNode(node2);
                                 setIsNodeDetailsModalOpen(true);
-                            }}>
-                            {node2?.id} {node2?.name}
-                        </Button>
+                            }}
+                        />
                         <Button onClick={() => setIsConfirmModalOpen(true)}>
                             Delete
                         </Button>

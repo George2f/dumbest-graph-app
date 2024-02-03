@@ -4,8 +4,8 @@ import generateLinkName from '../../utils/parseLinkName';
 import { useGraph } from '../../providers/GraphProvider';
 import { useEffect, useMemo, useState } from 'react';
 import Button from '../../components/Button';
-import clsx from 'clsx';
 import TagPill from '../../components/TagPill';
+import { cn } from '../../utils/cn';
 
 export default function GraphModule() {
     const { nodes, links, comments, getTag, tags } = useGraph();
@@ -190,7 +190,7 @@ export default function GraphModule() {
             <div className="mb-2 ml-2 mt-2 flex flex-row flex-wrap gap-1.5">
                 {highlightTags.length > 0 ? (
                     <Button
-                        className={clsx('px-4 py-0', {
+                        className={cn('px-4 py-0', {
                             ['bg-green-300']: isHighlightCross,
                         })}
                         onClick={() => setIsHighlightCross((prev) => !prev)}>
