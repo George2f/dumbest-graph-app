@@ -21,7 +21,13 @@
 - give an id to the graph so you can have multiple at the same time - done
 - show how much nodes remain after filter - done
 - fix filter toggle button - done
+- move repo to github - done
+- make into a monorepo with subrepos
+- add go server subrepo
 - persist graph through backend
+
+## TODO 3
+
 - make header pretty
 - make filter select better
 - make id numbers smaller
