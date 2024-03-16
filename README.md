@@ -22,8 +22,10 @@
 - show how much nodes remain after filter - done
 - fix filter toggle button - done
 - move repo to github - done
-- make into a monorepo with subrepos
-- add go server subrepo
+- make into a monorepo with subrepos - canceled
+- add go server subfolder
+- add db subfolder - canceled
+- persist graph with SQLite
 - persist graph through backend
 
 ## TODO 3

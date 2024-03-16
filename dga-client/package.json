@@ -1,16 +1,20 @@
 {
     "name": "dumbest-graph-app",
     "private": true,
-    "version": "1.4.0",
+    "version": "1.5.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "prepare-migration": "npx prisma migrate dev --create-only",
+        "prepare-migration-down": "npx prisma migrate diff --from-schema-datamodel prisma/schema.prisma --to-schema-datasource prisma/schema.prisma --script > prisma/migrations/down.sql"
     },
     "dependencies": {
+        "@prisma/client": "^5.11.0",
         "clsx": "^2.0.0",
+        "prisma": "^5.11.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-force-graph": "^1.44.0",
@@ -35,5 +39,8 @@
         "ts-node": "^10.9.2",
         "typescript": "^5.0.2",
         "vite": "^4.4.5"
+    },
+    "prisma": {
+        "seed": "ts-node prisma/seed.ts"
     }
 }

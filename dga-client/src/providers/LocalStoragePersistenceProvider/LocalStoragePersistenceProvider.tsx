@@ -4,14 +4,11 @@ import INode from '../../types/INode';
 import ILink from '../../types/ILink';
 import IComment from '../../types/IComment';
 import ITag from '../../types/ITag';
-
-interface IGraphPersistenceProviderProps {
-    children: React.ReactNode;
-}
+import IProviderProps from '../types/IProviderProps';
 
 export default function LocalStoragePersistenceProvider({
     children,
-}: IGraphPersistenceProviderProps) {
+}: IProviderProps) {
     const handleSaveGraph = useCallback(
         ({
             id,
