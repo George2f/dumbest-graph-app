@@ -7,7 +7,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Nodes {
-  id   Int     @id @default(autoincrement())
-  name String?
+model Node {
+  id        Int
+  graphName String
+  Graph     Graph  @relation(fields: [graphName], references: [name])
+
+  Comment Comment[]
+
+  name     String
+  SourceOf Link[] @relation(name: "source")
+  TargetOf Link[] @relation(name: "target")
+
+  @@id([id, graphName])
+}
+
+model Link {
+  id        Int
+  Graph     Graph  @relation(fields: [graphName], references: [name])
+  graphName String
+
+  Comment Comment[]
+
+  name     String
+  sourceId Int
+  Source   Node   @relation(name: "source", fields: [sourceId, graphName], references: [id, graphName])
+  targetId Int
+  Target   Node   @relation(name: "target", fields: [targetId, graphName], references: [id, graphName])
+
+  @@id([id, graphName])
+}
+
+model Comment {
+  id        Int
+  Graph     Graph  @relation(fields: [graphName], references: [name])
+  graphName String
+
+  node   Node? @relation(fields: [nodeId, graphName], references: [id, graphName])
+  nodeId Int?
+  link   Link? @relation(fields: [linkId, graphName], references: [id, graphName])
+  linkId Int?
+
+  text String
+
+  @@id([id, graphName])
+}
+
+model Tag {
+  id        Int
+  Graph     Graph  @relation(fields: [graphName], references: [name])
+  graphName String
+
+  name  String
+  color String
+
+  @@id([id, graphName])
+}
+
+model Graph {
+  name String @id @unique
+
+  nodes    Node[]
+  links    Link[]
+  tags     Tag[]
+  comments Comment[]
 }
