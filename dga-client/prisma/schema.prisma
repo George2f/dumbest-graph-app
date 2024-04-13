@@ -8,63 +8,66 @@ datasource db {
 }
 
 model Node {
-  id        Int
-  graphName String
-  Graph     Graph  @relation(fields: [graphName], references: [name])
+  id      Int   @id @default(autoincrement())
+  Graph   Graph @relation(fields: [graphId], references: [id])
+  graphId Int
 
   Comment Comment[]
 
-  name     String
-  SourceOf Link[] @relation(name: "source")
-  TargetOf Link[] @relation(name: "target")
+  name      String
+  SourceOf  Link[]      @relation(name: "source")
+  TargetOf  Link[]      @relation(name: "target")
+  Attribute Attribute[]
+}
 
-  @@id([id, graphName])
+model Attribute {
+  id     Int  @id @default(autoincrement())
+  nodeId Int
+  Node   Node @relation(fields: [nodeId], references: [id])
+
+  key   String
+  value String
 }
 
 model Link {
-  id        Int
-  Graph     Graph  @relation(fields: [graphName], references: [name])
-  graphName String
+  id      Int   @id @default(autoincrement())
+  Graph   Graph @relation(fields: [graphId], references: [id])
+  graphId Int
 
   Comment Comment[]
 
   name     String
   sourceId Int
-  Source   Node   @relation(name: "source", fields: [sourceId, graphName], references: [id, graphName])
+  Source   Node   @relation(name: "source", fields: [sourceId], references: [id])
   targetId Int
-  Target   Node   @relation(name: "target", fields: [targetId, graphName], references: [id, graphName])
-
-  @@id([id, graphName])
+  Target   Node   @relation(name: "target", fields: [targetId], references: [id])
 }
 
 model Comment {
-  id        Int
-  Graph     Graph  @relation(fields: [graphName], references: [name])
-  graphName String
+  id      Int   @id @default(autoincrement())
+  Graph   Graph @relation(fields: [graphId], references: [id])
+  graphId Int
 
-  node   Node? @relation(fields: [nodeId, graphName], references: [id, graphName])
+  node   Node? @relation(fields: [nodeId], references: [id])
   nodeId Int?
-  link   Link? @relation(fields: [linkId, graphName], references: [id, graphName])
+  link   Link? @relation(fields: [linkId], references: [id])
   linkId Int?
 
   text String
-
-  @@id([id, graphName])
 }
 
 model Tag {
-  id        Int
-  Graph     Graph  @relation(fields: [graphName], references: [name])
-  graphName String
+  id      Int   @id @default(autoincrement())
+  Graph   Graph @relation(fields: [graphId], references: [id])
+  graphId Int
 
   name  String
   color String
-
-  @@id([id, graphName])
 }
 
 model Graph {
-  name String @id @unique
+  id   Int    @id @default(autoincrement())
+  name String
 
   nodes    Node[]
   links    Link[]
