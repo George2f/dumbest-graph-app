@@ -6,6 +6,7 @@ import Button from '../../../components/Button';
 import IdType from '../../../types/IdType';
 import TagPill from '../../../components/TagPill';
 import INode from '../../../types/INode';
+import IAttribute from '../../../types/IAttribute';
 
 interface NewNodeModuleProps {
     original?: INode;
@@ -16,8 +17,8 @@ export default function NewNodeModule({ original }: NewNodeModuleProps) {
     const history = useHistory();
 
     const [newNodeName, setNewNodeName] = useState<string>('');
-    const [newAttributes, setNewAttributes] = useState<[string, string][]>(
-        original?.attributes || [['', '']]
+    const [newAttributes, setNewAttributes] = useState<IAttribute[]>(
+        original?.attributes || []
     );
     const [newNodeTags, setNewNodeTags] = useState<IdType[]>(
         original?.tags || []
@@ -32,9 +33,7 @@ export default function NewNodeModule({ original }: NewNodeModuleProps) {
                     id: graph.getNewId(),
                     name: newNodeName,
                     tags: newNodeTags,
-                    attributes: newAttributes.filter(
-                        ([key, value]) => key && value
-                    ),
+                    attributes: newAttributes.filter((a) => a.key && a.value),
                 },
                 graph
             );
@@ -42,7 +41,7 @@ export default function NewNodeModule({ original }: NewNodeModuleProps) {
             history.push(command);
 
             setNewNodeName('');
-            setNewAttributes(newAttributes.map(([key]) => [key, '']));
+            setNewAttributes(newAttributes.map((a) => ({ ...a, value: '' })));
         },
         [graph, history, newAttributes, newNodeName, newNodeTags]
     );
@@ -61,13 +60,13 @@ export default function NewNodeModule({ original }: NewNodeModuleProps) {
                     />
                 </label>
                 <h4>Attributes</h4>
-                {newAttributes.map(([key, value], index) => (
+                {newAttributes.map((a, index) => (
                     <div key={index}>
                         <label>
                             Key:
                             <input
                                 type="text"
-                                value={key}
+                                value={a.key}
                                 onChange={(event) => {
                                     const isLast =
                                         index === newAttributes.length - 1;
@@ -78,7 +77,11 @@ export default function NewNodeModule({ original }: NewNodeModuleProps) {
                                     newAttributesCopy[index][0] =
                                         event.target.value;
                                     if (isLast) {
-                                        newAttributesCopy.push(['', '']);
+                                        newAttributesCopy.push({
+                                            id: graph.getNewId(),
+                                            key: '',
+                                            value: '',
+                                        });
                                     }
                                     setNewAttributes(newAttributesCopy);
                                 }}
@@ -88,7 +91,7 @@ export default function NewNodeModule({ original }: NewNodeModuleProps) {
                             Value:
                             <input
                                 type="text"
-                                value={value}
+                                value={a.value}
                                 onChange={(event) => {
                                     const newAttributesCopy = [
                                         ...newAttributes,

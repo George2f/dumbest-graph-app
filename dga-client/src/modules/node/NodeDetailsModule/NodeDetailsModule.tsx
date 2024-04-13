@@ -13,6 +13,8 @@ import ConfirmModal from '../../../components/ConfirmModal';
 import NewLinkModule from '../../link/NewLinkModule';
 import LinkListModule from '../../link/LinkListModule';
 import NewNodeModule from '../NewNodeModule';
+import IAttribute from '../../../types/IAttribute';
+import useMount from '../../../utils/useMount';
 
 interface INodeDetailsProps {
     node: INode;
@@ -28,9 +30,9 @@ export default function NodeDetailsModule({
 
     const [editNodeTags, setEditNodeTags] = useState(node.tags || []);
     const [editNodeName, setEditNodeName] = useState(node.name);
-    const [editNodeAttributes, setEditNodeAttributes] = useState<
-        [string, string][]
-    >(node.attributes?.concat([['', '']]) || [['', '']]);
+    const [editNodeAttributes, setEditNodeAttributes] = useState<IAttribute[]>(
+        []
+    );
     const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
     const [isCommentListModalOpen, setIsCommentListModalOpen] =
         useState<boolean>(false);
@@ -42,6 +44,14 @@ export default function NodeDetailsModule({
         useState<boolean>(false);
     const [isNewNodeModalOpen, setIsNewNodeModalOpen] =
         useState<boolean>(false);
+
+    useMount(() => {
+        setEditNodeAttributes(
+            node.attributes?.concat([
+                { id: graph.getNewId(), key: '', value: '' },
+            ]) || []
+        );
+    });
 
     const relatedComments = useMemo(
         () => graph.comments.filter((comment) => comment.targetId === node.id),
@@ -62,9 +72,7 @@ export default function NodeDetailsModule({
                 ...node,
                 name: editNodeName,
                 tags: editNodeTags,
-                attributes: editNodeAttributes.filter(
-                    ([key, value]) => key && value
-                ),
+                attributes: editNodeAttributes.filter((a) => a.key && a.value),
             },
             graph
         );
@@ -108,14 +116,14 @@ export default function NodeDetailsModule({
                     </Button>
                 </div>
                 <div>Attributes:</div>
-                {editNodeAttributes.map(([key, value], index) => (
+                {editNodeAttributes.map((a, index) => (
                     <div key={index} className="">
                         <label className="flex flex-row">
                             Key:
                             <input
                                 type="text"
                                 className="w-full"
-                                value={key}
+                                value={a.key}
                                 onChange={(event) => {
                                     const isLast =
                                         index === editNodeAttributes.length - 1;
@@ -123,10 +131,14 @@ export default function NodeDetailsModule({
                                     const editAttributesCopy = [
                                         ...editNodeAttributes,
                                     ];
-                                    editAttributesCopy[index][0] =
+                                    editAttributesCopy[index].key =
                                         event.target.value;
                                     if (isLast) {
-                                        editAttributesCopy.push(['', '']);
+                                        editAttributesCopy.push({
+                                            id: graph.getNewId(),
+                                            key: '',
+                                            value: '',
+                                        });
                                     }
                                     setEditNodeAttributes(editAttributesCopy);
                                 }}
@@ -137,11 +149,11 @@ export default function NodeDetailsModule({
                             <input
                                 type="text"
                                 className="w-full"
-                                value={value}
+                                value={a.value}
                                 onChange={(event) => {
                                     const newAttributes =
                                         editNodeAttributes.slice();
-                                    newAttributes[index][1] =
+                                    newAttributes[index].value =
                                         event.target.value;
                                     setEditNodeAttributes(newAttributes);
                                 }}
