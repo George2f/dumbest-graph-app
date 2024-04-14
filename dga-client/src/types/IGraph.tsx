@@ -5,19 +5,24 @@ import IdType from './IdType';
 import ITag from './ITag';
 
 export default interface IGraph {
-    graphId: string;
-    setGraphId: (id: string) => void;
+    graphId: IdType;
+    name: string;
+    loadGraph: (name: string) => void;
     getNewId: () => IdType;
     nodes: INode[];
     links: ILink[];
     comments: IComment[];
     tags: ITag[];
     initGraph: ({
+        id,
+        name,
         nodes,
         links,
         comments,
         tags,
     }: {
+        id: IdType;
+        name: string;
         nodes: INode[];
         links: ILink[];
         comments: IComment[];
@@ -25,19 +30,19 @@ export default interface IGraph {
     }) => void;
     clearGraph: () => void;
     addNode: (node: INode) => void;
-    addComment: (comment: IComment) => void;
-    addLink: (link: ILink) => void;
-    deleteComment: (id: IdType) => void;
-    deleteLink: (id: IdType) => void;
-    deleteNode: (id: IdType) => void;
-    editComment: (id: IdType, comment: IComment) => void;
-    editLink: (id: IdType, link: ILink) => void;
-    editNode: (id: IdType, node: INode) => void;
-    addTag: (tag: ITag) => void;
-    deleteTag: (id: IdType) => void;
-    editTag: (id: IdType, tag: ITag) => void;
     getNode(id: IdType): INode | undefined;
-    getLink(id: IdType): ILink | undefined;
+    editNode: (id: IdType, node: INode) => void;
+    deleteNode: (id: IdType) => void;
+    addComment: (comment: IComment) => void;
     getComment(id: IdType): IComment | undefined;
+    editComment: (id: IdType, comment: IComment) => void;
+    deleteComment: (id: IdType) => void;
+    addLink: (link: ILink) => void;
+    getLink(id: IdType): ILink | undefined;
+    editLink: (id: IdType, link: ILink) => void;
+    deleteLink: (id: IdType) => void;
+    addTag: (tag: ITag) => void;
     getTag(id: IdType): ITag | undefined;
+    editTag: (id: IdType, tag: ITag) => void;
+    deleteTag: (id: IdType) => void;
 }

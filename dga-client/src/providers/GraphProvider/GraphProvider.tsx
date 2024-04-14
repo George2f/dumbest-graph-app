@@ -5,7 +5,7 @@ import IComment from '../../types/IComment';
 import IdType from '../../types/IdType';
 import IGraph from '../../types/IGraph';
 import ITag from '../../types/ITag';
-import { useGraphPersistence } from '../../contexts/GraphPersistenceContext';
+import { useGraphPersistence } from '../../persistence/GraphPersistenceContext';
 import debounce from '../../utils/debounce';
 import useMount from '../../utils/useMount';
 
@@ -13,16 +13,21 @@ const GraphContext = React.createContext<IGraph>({} as IGraph);
 
 interface IGraphProviderProps {
     children: React.ReactNode;
-    defaultGraphId: string;
+    defaultGraphId: IdType;
+    defaultGraphName: string;
 }
 
 export default function GraphProvider({
     children,
     defaultGraphId,
+    defaultGraphName,
 }: IGraphProviderProps) {
     const { saveGraph, loadGraph } = useGraphPersistence();
     const [locked, setLocked] = React.useState(true);
-    const [graphId, setGraphId] = React.useState(defaultGraphId || 'graph');
+    const [graphId, setGraphId] = React.useState<IdType>(defaultGraphId || 1);
+    const [graphName, setGraphName] = React.useState<string>(
+        defaultGraphName || 'Graph'
+    );
     const [nextId, setNextId] = React.useState<IdType>(1);
     const [nodes, setNodes] = React.useState<INode[]>([]);
     const [links, setLinks] = React.useState<ILink[]>([]);
@@ -31,11 +36,15 @@ export default function GraphProvider({
 
     const initGraph = React.useCallback(
         ({
+            id,
+            name,
             nodes = [],
             links = [],
             comments = [],
             tags = [],
         }: {
+            id: IdType;
+            name: string;
             nodes: INode[];
             links: ILink[];
             comments: IComment[];
@@ -48,6 +57,8 @@ export default function GraphProvider({
                 ...comments.map((comment) => comment.id),
                 ...tags.map((tag) => tag.id)
             );
+            setGraphId(id);
+            setGraphName(name);
             setNextId(lastId + 1);
             setNodes(nodes);
             setLinks(links);
@@ -60,7 +71,7 @@ export default function GraphProvider({
     const persistGraph = useMemo(() => debounce(saveGraph, 1000), [saveGraph]);
 
     useMount(() => {
-        const loadedGraph = loadGraph({ id: graphId });
+        const loadedGraph = loadGraph({ name: graphName });
         if (loadedGraph) {
             initGraph(loadedGraph);
         }
@@ -71,6 +82,7 @@ export default function GraphProvider({
         if (locked) return;
         persistGraph({
             id: graphId,
+            name: graphName,
             graph: { nodes, links, comments, tags },
         });
     }, [
@@ -82,6 +94,7 @@ export default function GraphProvider({
         saveGraph,
         graphId,
         persistGraph,
+        graphName,
     ]);
 
     const handleClearGraph = React.useCallback(() => {
@@ -91,25 +104,26 @@ export default function GraphProvider({
         setTags([]);
     }, []);
 
-    const handleSetGraphId = React.useCallback(
-        (newId: string) => {
-            setLocked(true);
-            const graph = loadGraph({ id: newId });
-            setGraphId(newId);
-            if (graph) {
-                initGraph(graph);
-            } else {
-                handleClearGraph();
-            }
-            setLocked(false);
-        },
-        [handleClearGraph, initGraph, loadGraph]
-    );
-
     const getNewId = React.useCallback(() => {
         setNextId((prevId) => prevId + 1);
         return nextId;
     }, [nextId]);
+
+    const handleLoadGraph = React.useCallback(
+        (newName: string) => {
+            setLocked(true);
+            const graph = loadGraph({ name: newName });
+            if (graph) {
+                initGraph(graph);
+            } else {
+                setGraphId(getNewId());
+                setGraphName(newName);
+                handleClearGraph();
+            }
+            setLocked(false);
+        },
+        [getNewId, handleClearGraph, initGraph, loadGraph]
+    );
 
     const handleAddComment = React.useCallback((comment: IComment) => {
         setComments((prevComments) => [...prevComments, comment]);
@@ -268,7 +282,8 @@ export default function GraphProvider({
                 getComment,
                 getTag,
                 graphId,
-                setGraphId: handleSetGraphId,
+                name: graphName,
+                loadGraph: handleLoadGraph,
             }}>
             {children}
         </GraphContext.Provider>

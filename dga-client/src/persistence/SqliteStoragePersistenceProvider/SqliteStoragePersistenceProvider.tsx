@@ -1,9 +1,9 @@
-import GraphPersistenceContext from '../../contexts/GraphPersistenceContext';
+import GraphPersistenceContext from '../GraphPersistenceContext';
 import IComment from '../../types/IComment';
 import ILink from '../../types/ILink';
 import INode from '../../types/INode';
 import ITag from '../../types/ITag';
-import IProviderProps from '../types/IProviderProps';
+import IProviderProps from '../../providers/types/IProviderProps';
 
 export default function SqliteStoragePersistenceProvider({
     children,

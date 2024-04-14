@@ -4,12 +4,12 @@ import App from './App';
 import './index.css';
 import GraphProvider from './providers/GraphProvider';
 import HistoryProvider from './providers/HistoryProvider';
-import LocalStoragePersistenceProvider from './providers/LocalStoragePersistenceProvider';
+import LocalStoragePersistenceProvider from './persistence/LocalStoragePersistenceProvider';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <LocalStoragePersistenceProvider>
-            <GraphProvider defaultGraphId="graph">
+            <GraphProvider defaultGraphId={1} defaultGraphName="graph">
                 <HistoryProvider>
                     <App />
                 </HistoryProvider>

@@ -12,7 +12,7 @@ export default function Header() {
     const navigate = useNavigate();
 
     const [exportFileName, setExportFileName] = useState<string>('dga-data');
-    const [editGraphId, setEditGraphId] = useState<string>('');
+    const [editGraphName, setEditGraphName] = useState<string>('');
     const [isEditGraphIdModalOpen, setIsEditGraphIdModalOpen] =
         useState<boolean>(false);
     const [isManageGraphMenuOpen, setIsManageGraphMenuOpen] =
@@ -47,6 +47,8 @@ export default function Header() {
             if (!exportFileName) return;
             const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
                 JSON.stringify({
+                    id: graph.graphId,
+                    name: graph.name,
                     nodes: graph.nodes,
                     links: graph.links,
                     comments: graph.comments,
@@ -64,13 +66,13 @@ export default function Header() {
 
     const handleEditGraphIdSubmit = (e) => {
         e.preventDefault();
-        if (!editGraphId) return;
-        graph.setGraphId(editGraphId);
+        if (!editGraphName) return;
+        graph.loadGraph(editGraphName);
         setIsEditGraphIdModalOpen(false);
     };
 
     return (
-        <header className="shadow-md z-10">
+        <header className="z-10 shadow-md">
             <div className="flex flex-row">
                 <div className="w-full">
                     <div>
@@ -92,7 +94,7 @@ export default function Header() {
                                 <>
                                     <Button
                                         onClick={() => {
-                                            setEditGraphId(graph.graphId);
+                                            setEditGraphName(graph.name);
                                             setIsEditGraphIdModalOpen(true);
                                         }}>
                                         Change graph
@@ -164,9 +166,9 @@ export default function Header() {
                     <h2>Load different graph</h2>
                     <Input
                         autoFocus
-                        value={editGraphId}
+                        value={editGraphName}
                         onChange={(e) => {
-                            setEditGraphId(e.target.value);
+                            setEditGraphName(e.target.value);
                         }}
                     />
                     <Button type="submit">Load</Button>

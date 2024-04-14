@@ -3,13 +3,16 @@ import INode from '../types/INode';
 import ILink from '../types/ILink';
 import IComment from '../types/IComment';
 import ITag from '../types/ITag';
+import IdType from '../types/IdType';
 
 interface IGraphPersistenceContextValue {
     saveGraph: ({
         id,
+        name,
         graph: { nodes, links, comments, tags },
     }: {
-        id: string;
+        id: IdType;
+        name: string;
         graph: {
             nodes: INode[];
             links: ILink[];
@@ -17,15 +20,17 @@ interface IGraphPersistenceContextValue {
             tags: ITag[];
         };
     }) => void;
-    loadGraph: ({ id }: { id: string }) =>
+    loadGraph: ({ name }: { name: string }) =>
         | {
+              id: IdType;
+              name: string;
               nodes: INode[];
               links: ILink[];
               comments: IComment[];
               tags: ITag[];
           }
         | undefined;
-    clearGraph: ({ id }: { id: string }) => void;
+    clearGraph: ({ id }: { id: IdType }) => void;
 }
 
 const GraphPersistenceContext =
