@@ -14,21 +14,21 @@ export default class DeleteTagCommand extends AbstractCommand {
         this.graph = graph;
     }
 
-    public execute(): void {
+    public execute() {
         this.nodes = this.graph.nodes.filter((node) =>
             node.tags.includes(this.tag.id)
         );
         this.graph.deleteTag(this.tag.id);
     }
 
-    public undo(): void {
+    public undo() {
         this.graph.addTag(this.tag!);
         this.nodes.forEach((node) => {
-            this.graph.editNode(node.id, node);
+            this.graph.updateNode(node.id, node);
         });
     }
 
-    public getInfo(): string {
+    public getInfo() {
         return `Delete tag ${this.tag.id}`;
     }
 }

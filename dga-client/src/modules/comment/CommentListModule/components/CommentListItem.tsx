@@ -41,7 +41,6 @@ export default function CommentListItem({
                 }}
                 className="text-left">
                 <div>
-                    {comment.id}{' '}
                     <strong>
                         {
                             (

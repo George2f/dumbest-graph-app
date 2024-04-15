@@ -6,3 +6,5 @@ export default interface INode extends INamedGraphItem {
     tags: IdType[];
     attributes?: IAttribute[];
 }
+
+export type NewNode = Omit<INode, 'id'>;

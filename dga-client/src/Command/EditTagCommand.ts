@@ -1,31 +1,28 @@
 import IGraph from '../types/IGraph';
 import ITag from '../types/ITag';
-import IdType from '../types/IdType';
 import AbstractCommand from './AbstractCommand';
 
 export default class EditTagCommand extends AbstractCommand {
-    private tagId: IdType;
     private graph: IGraph;
     private oldTag: ITag | undefined;
-    private newTag: ITag;
+    private tag: ITag;
 
-    constructor(tagId: IdType, newTag: ITag, graph: IGraph) {
+    constructor(newTag: ITag, graph: IGraph) {
         super();
-        this.tagId = tagId;
         this.graph = graph;
-        this.newTag = newTag;
+        this.tag = newTag;
     }
 
-    public execute(): void {
-        this.oldTag = this.graph.getTag(this.tagId);
-        this.graph.editTag(this.tagId, this.newTag);
+    public execute() {
+        this.oldTag = this.graph.getTag(this.tag.id);
+        this.graph.updateTag(this.tag.id, this.tag);
     }
 
-    public undo(): void {
-        this.graph.editTag(this.tagId, this.oldTag!);
+    public undo() {
+        this.graph.updateTag(this.tag.id, this.oldTag!);
     }
 
-    public getInfo(): string {
-        return `Edit tag ${this.tagId}`;
+    public getInfo() {
+        return `Edit tag ${this.tag.id}`;
     }
 }

@@ -5,24 +5,24 @@ import AbstractCommand from './AbstractCommand';
 export default class EditNodeCommand extends AbstractCommand {
     private node: INode;
     private graph: IGraph;
-    private oldNode: INode;
+    private oldNode: INode | undefined;
 
     constructor(node: INode, graph: IGraph) {
         super();
         this.node = node;
         this.graph = graph;
-        this.oldNode = graph.nodes.find((n) => n.id === node.id)!;
     }
 
-    public execute(): void {
-        this.graph.editNode(this.node.id, this.node);
+    public execute() {
+        this.oldNode = this.graph.nodes.find((n) => n.id === this.node.id)!;
+        this.graph.updateNode(this.node.id, this.node);
     }
 
-    public undo(): void {
-        this.graph.editNode(this.node.id, this.oldNode);
+    public undo() {
+        this.graph.updateNode(this.node.id, this.oldNode!);
     }
 
-    public getInfo(): string {
+    public getInfo() {
         return `Edit node ${this.node.id}`;
     }
 }

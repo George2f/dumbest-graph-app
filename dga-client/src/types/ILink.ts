@@ -7,3 +7,5 @@ export default interface ILink extends INamedGraphItem {
     node2Id: IdType;
     type: LINK_TYPE_ENUM;
 }
+
+export type NewLink = Omit<ILink, 'id'>;

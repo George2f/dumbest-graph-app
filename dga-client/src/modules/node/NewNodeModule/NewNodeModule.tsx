@@ -30,7 +30,6 @@ export default function NewNodeModule({ original }: NewNodeModuleProps) {
             if (!newNodeName) return;
             const command = new AddNodeCommand(
                 {
-                    id: graph.getNewId(),
                     name: newNodeName,
                     tags: newNodeTags,
                     attributes: newAttributes.filter((a) => a.key && a.value),
@@ -78,7 +77,6 @@ export default function NewNodeModule({ original }: NewNodeModuleProps) {
                                         event.target.value;
                                     if (isLast) {
                                         newAttributesCopy.push({
-                                            id: graph.getNewId(),
                                             key: '',
                                             value: '',
                                         });

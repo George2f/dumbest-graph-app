@@ -11,19 +11,18 @@ export default class EditLinkCommand extends AbstractCommand {
         super();
         this.link = link;
         this.graph = graph;
-        this.oldLink = graph.links.find((l) => l.id === link.id);
     }
 
-    public execute(): void {
-        this.graph.editLink(this.link.id, this.link);
+    public execute() {
+        this.oldLink = this.graph.links.find((l) => l.id === this.link.id);
+        this.graph.updateLink(this.link.id, this.link);
     }
 
-    public undo(): void {
-        if (!this.oldLink) return;
-        this.graph.editLink(this.oldLink.id, this.oldLink);
+    public undo() {
+        this.graph.updateLink(this.link.id, this.oldLink!);
     }
 
-    public getInfo(): string {
+    public getInfo() {
         return `Edit link ${this.link.id}`;
     }
 }

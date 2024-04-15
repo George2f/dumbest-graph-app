@@ -10,7 +10,6 @@ import NewCommentModule from '../../../../comment/NewCommentModule';
 import CommentListModule from '../../../../comment/CommentListModule';
 import ConfirmModal from '../../../../../components/ConfirmModal';
 import NodeDetailsModule from '../../../../node/NodeDetailsModule';
-import NodeNameButton from '../../../../../components/NodeNameButton';
 
 interface ILinkListItemProps {
     link: ILink;
@@ -58,7 +57,6 @@ export default function LinkListItem({
                             onClick={() => {
                                 setIsModalOpen(true);
                             }}>
-                            <small>{link.id}</small>{' '}
                             {generateLinkName(
                                 link,
                                 node1?.name || '',
@@ -67,20 +65,20 @@ export default function LinkListItem({
                         </Button>
                     </div>
                     <div>
-                        <NodeNameButton
-                            node={node1}
+                        <Button
                             onClick={() => {
                                 setSelectedNode(node1);
                                 setIsNodeDetailsModalOpen(true);
-                            }}
-                        />
-                        <NodeNameButton
-                            node={node2}
+                            }}>
+                            {node1?.name}
+                        </Button>
+                        <Button
                             onClick={() => {
                                 setSelectedNode(node2);
                                 setIsNodeDetailsModalOpen(true);
-                            }}
-                        />
+                            }}>
+                            {node2?.name}
+                        </Button>
                         <Button onClick={() => setIsConfirmModalOpen(true)}>
                             Delete
                         </Button>

@@ -111,7 +111,6 @@ export default function NewCommentModule({
 
                                 const command = new AddCommentCommand(
                                     {
-                                        id: graph.getNewId(),
                                         text: newCommentText,
                                         targetId:
                                             newCommentTargetLink?.id ||

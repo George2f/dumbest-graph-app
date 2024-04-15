@@ -1,26 +1,34 @@
 import IGraph from '../types/IGraph';
-import INode from '../types/INode';
+import INode, { NewNode } from '../types/INode';
 import AbstractCommand from './AbstractCommand';
 
 export default class AddNodeCommand extends AbstractCommand {
-    private node: INode;
+    private newNode: NewNode;
     private graph: IGraph;
+    private createdNode: INode | undefined;
 
-    constructor(node: INode, graph: IGraph) {
+    constructor(node: NewNode, graph: IGraph) {
         super();
-        this.node = node;
+        this.newNode = node;
         this.graph = graph;
     }
 
-    public execute(): void {
-        this.graph.addNode(this.node);
+    public execute() {
+        if (this.createdNode) {
+            this.graph.addNode(this.createdNode);
+        } else {
+            this.createdNode = this.graph.addNode(this.newNode);
+        }
     }
 
-    public undo(): void {
-        this.graph.deleteNode(this.node.id);
+    public undo() {
+        if (!this.createdNode) {
+            throw new Error('Cannot undo add node command');
+        }
+        this.graph.deleteNode(this.createdNode.id);
     }
 
-    public getInfo(): string {
-        return `Add node ${this.node.id}`;
+    public getInfo() {
+        return `Add node ${this.newNode.name}`;
     }
 }

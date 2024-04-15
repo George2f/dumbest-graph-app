@@ -82,7 +82,6 @@ export default function NewLinkModule({ node1 }: INewLinkModuleProps) {
 
                     const command = new AddLinkCommand(
                         {
-                            id: graph.getNewId(),
                             node1Id: newLinkNode1.id,
                             node2Id: newLinkNode2.id,
                             type: newLinkType,

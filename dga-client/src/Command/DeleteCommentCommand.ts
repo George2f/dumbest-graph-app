@@ -12,15 +12,15 @@ export default class DeleteCommentCommand extends AbstractCommand {
         this.graph = graph;
     }
 
-    public execute(): void {
+    public execute() {
         this.graph.deleteComment(this.comment.id);
     }
 
-    public undo(): void {
+    public undo() {
         this.graph.addComment(this.comment);
     }
 
-    public getInfo(): string {
+    public getInfo() {
         return `Delete comment ${this.comment.id}`;
     }
 }

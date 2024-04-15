@@ -47,9 +47,7 @@ export default function NodeDetailsModule({
 
     useMount(() => {
         setEditNodeAttributes(
-            node.attributes?.concat([
-                { id: graph.getNewId(), key: '', value: '' },
-            ]) || []
+            node.attributes?.concat([{ key: '', value: '' }]) || []
         );
     });
 
@@ -135,7 +133,6 @@ export default function NodeDetailsModule({
                                         event.target.value;
                                     if (isLast) {
                                         editAttributesCopy.push({
-                                            id: graph.getNewId(),
                                             key: '',
                                             value: '',
                                         });

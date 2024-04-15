@@ -20,7 +20,6 @@ export default function NewTagModule() {
                     if (!name) return;
                     const command = new AddTagCommand(
                         {
-                            id: graph.getNewId(),
                             name,
                             color,
                         },

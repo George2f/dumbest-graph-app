@@ -23,9 +23,11 @@
 - fix filter toggle button - done
 - move repo to github - done
 - make into a monorepo with subrepos - canceled
-- add go server subfolder
 - add db subfolder - canceled
+- rework local persistence - done
 - persist graph with SQLite
+- make MSW persistence layer
+- add go server subfolder
 - persist graph through backend
 
 ## TODO 3

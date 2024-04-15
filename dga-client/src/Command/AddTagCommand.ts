@@ -1,26 +1,34 @@
 import IGraph from '../types/IGraph';
-import ITag from '../types/ITag';
+import ITag, { NewTag } from '../types/ITag';
 import AbstractCommand from './AbstractCommand';
 
 export default class AddTagCommand extends AbstractCommand {
-    private tag: ITag;
+    private newTag: NewTag;
+    private createdTag: ITag | undefined;
     private graph: IGraph;
 
-    constructor(tag: ITag, graph: IGraph) {
+    constructor(tag: NewTag, graph: IGraph) {
         super();
-        this.tag = tag;
+        this.newTag = tag;
         this.graph = graph;
     }
 
-    public execute(): void {
-        this.graph.addTag(this.tag);
+    public execute() {
+        if (this.createdTag) {
+            this.graph.addTag(this.createdTag);
+        } else {
+            this.createdTag = this.graph.addTag(this.newTag);
+        }
     }
 
-    public undo(): void {
-        this.graph.deleteTag(this.tag.id);
+    public undo() {
+        if (!this.createdTag) {
+            throw new Error('Cannot undo add tag command');
+        }
+        this.graph.deleteTag(this.createdTag.id);
     }
 
-    public getInfo(): string {
-        return `Add tag ${this.tag.id}`;
+    public getInfo() {
+        return `Add tag ${this.newTag.name}`;
     }
 }

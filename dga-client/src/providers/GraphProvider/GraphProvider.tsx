@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
-import INode from '../../types/INode';
-import ILink from '../../types/ILink';
-import IComment from '../../types/IComment';
+import React from 'react';
+import INode, { NewNode } from '../../types/INode';
+import ILink, { NewLink } from '../../types/ILink';
+import IComment, { NewComment } from '../../types/IComment';
 import IdType from '../../types/IdType';
 import IGraph from '../../types/IGraph';
-import ITag from '../../types/ITag';
+import ITag, { NewTag } from '../../types/ITag';
 import { useGraphPersistence } from '../../persistence/GraphPersistenceContext';
-import debounce from '../../utils/debounce';
 import useMount from '../../utils/useMount';
 
 const GraphContext = React.createContext<IGraph>({} as IGraph);
@@ -22,13 +21,26 @@ export default function GraphProvider({
     defaultGraphId,
     defaultGraphName,
 }: IGraphProviderProps) {
-    const { saveGraph, loadGraph } = useGraphPersistence();
-    const [locked, setLocked] = React.useState(true);
+    const {
+        clearGraph,
+        createComment,
+        createLink,
+        createNode,
+        createTag,
+        deleteComment,
+        deleteLink,
+        deleteNode,
+        deleteTag,
+        updateComment,
+        updateLink,
+        updateNode,
+        updateTag,
+        loadGraph,
+    } = useGraphPersistence();
     const [graphId, setGraphId] = React.useState<IdType>(defaultGraphId || 1);
     const [graphName, setGraphName] = React.useState<string>(
         defaultGraphName || 'Graph'
     );
-    const [nextId, setNextId] = React.useState<IdType>(1);
     const [nodes, setNodes] = React.useState<INode[]>([]);
     const [links, setLinks] = React.useState<ILink[]>([]);
     const [comments, setComments] = React.useState<IComment[]>([]);
@@ -50,16 +62,8 @@ export default function GraphProvider({
             comments: IComment[];
             tags: ITag[];
         }) => {
-            const lastId = Math.max(
-                0,
-                ...nodes.map((node) => node.id),
-                ...links.map((link) => link.id),
-                ...comments.map((comment) => comment.id),
-                ...tags.map((tag) => tag.id)
-            );
             setGraphId(id);
             setGraphName(name);
-            setNextId(lastId + 1);
             setNodes(nodes);
             setLinks(links);
             setComments(comments);
@@ -68,172 +72,149 @@ export default function GraphProvider({
         []
     );
 
-    const persistGraph = useMemo(() => debounce(saveGraph, 1000), [saveGraph]);
-
     useMount(() => {
         const loadedGraph = loadGraph({ name: graphName });
         if (loadedGraph) {
             initGraph(loadedGraph);
+        } else {
+            throw new Error(`Graph ${graphName} not found`);
         }
-        setLocked(false);
     });
 
-    useEffect(() => {
-        if (locked) return;
-        persistGraph({
-            id: graphId,
-            name: graphName,
-            graph: { nodes, links, comments, tags },
-        });
-    }, [
-        nodes,
-        links,
-        comments,
-        locked,
-        tags,
-        saveGraph,
-        graphId,
-        persistGraph,
-        graphName,
-    ]);
-
     const handleClearGraph = React.useCallback(() => {
-        setNodes([]);
-        setLinks([]);
-        setComments([]);
-        setTags([]);
-    }, []);
-
-    const getNewId = React.useCallback(() => {
-        setNextId((prevId) => prevId + 1);
-        return nextId;
-    }, [nextId]);
+        clearGraph({ id: graphId });
+        loadGraph({ name: graphName });
+    }, [clearGraph, graphId, graphName, loadGraph]);
 
     const handleLoadGraph = React.useCallback(
         (newName: string) => {
-            setLocked(true);
             const graph = loadGraph({ name: newName });
             if (graph) {
                 initGraph(graph);
             } else {
-                setGraphId(getNewId());
-                setGraphName(newName);
-                handleClearGraph();
+                throw new Error(`Graph ${newName} not found`);
             }
-            setLocked(false);
         },
-        [getNewId, handleClearGraph, initGraph, loadGraph]
+        [initGraph, loadGraph]
     );
 
-    const handleAddComment = React.useCallback((comment: IComment) => {
-        setComments((prevComments) => [...prevComments, comment]);
-    }, []);
+    const handleAddComment = React.useCallback(
+        (comment: NewComment | IComment) => {
+            const createdComment = createComment({ graphId, comment });
+            setComments((prevComments) => [...prevComments, createdComment]);
+            return createdComment;
+        },
+        [createComment, graphId]
+    );
 
-    const handleDeleteComment = React.useCallback((id: IdType) => {
-        setComments((prevComments) =>
-            prevComments.filter((comment) => comment.id !== id)
-        );
-    }, []);
+    const handleDeleteComment = React.useCallback(
+        (id: IdType) => {
+            deleteComment({ graphId, commentId: id });
+            initGraph(loadGraph({ name: graphName }));
+        },
+        [deleteComment, graphId, graphName, initGraph, loadGraph]
+    );
 
-    const handleEditComment = React.useCallback(
+    const handleUpdateComment = React.useCallback(
         (id: IdType, comment: IComment) => {
             setComments((prevComments) =>
                 prevComments.map((prevComment) =>
-                    prevComment.id === id ? comment : prevComment
+                    prevComment.id === id
+                        ? updateComment({ graphId, comment })
+                        : prevComment
                 )
             );
         },
-        []
+        [graphId, updateComment]
     );
 
-    const handleAddLink = React.useCallback((link: ILink) => {
-        setLinks((prevLinks) => [...prevLinks, link]);
-    }, []);
+    const handleAddLink = React.useCallback(
+        (link: NewLink | ILink) => {
+            const createdLink = createLink({ graphId, link });
+            setLinks((prevLinks) => [...prevLinks, createdLink]);
+            return createdLink;
+        },
+        [createLink, graphId]
+    );
 
     const handleDeleteLink = React.useCallback(
         (id: IdType) => {
-            setLinks((prevLinks) => prevLinks.filter((link) => link.id !== id));
-
-            const commentsToDelete = comments.filter(
-                (comment) => comment.targetId === id
-            );
-
-            commentsToDelete.forEach((comment) =>
-                handleDeleteComment(comment.id)
-            );
+            deleteLink({ graphId, linkId: id });
+            loadGraph({ name: graphName });
         },
-        [comments, handleDeleteComment]
+        [deleteLink, graphId, graphName, loadGraph]
     );
 
-    const handleEditLink = React.useCallback((id: IdType, link: ILink) => {
-        setLinks((prevLinks) =>
-            prevLinks.map((prevLink) => (prevLink.id === id ? link : prevLink))
-        );
-    }, []);
+    const handleUpdateLink = React.useCallback(
+        (id: IdType, link: ILink) => {
+            setLinks((prevLinks) =>
+                prevLinks.map((prevLink) =>
+                    prevLink.id === id
+                        ? updateLink({ graphId, link })
+                        : prevLink
+                )
+            );
+        },
+        [graphId, updateLink]
+    );
 
-    const handleAddNode = React.useCallback((node: INode) => {
-        setNodes((prevNodes) => [...prevNodes, node]);
-    }, []);
+    const handleAddNode = React.useCallback(
+        (node: NewNode | INode) => {
+            const createdNode = createNode({ graphId, node });
+            setNodes((prevNodes) => [...prevNodes, createdNode]);
+            return createdNode;
+        },
+        [createNode, graphId]
+    );
 
     const handleDeleteNode = React.useCallback(
         (id: IdType) => {
-            setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
-            const linksToDelete = links.filter(
-                (link) => link.node1Id === id || link.node2Id === id
-            );
-
-            linksToDelete.forEach((link) => {
-                handleDeleteLink(link.id);
-            });
-
-            const commentsToDelete = comments
-                .filter((comment) => comment.targetId === id)
-                .concat(
-                    comments.filter((comment) =>
-                        linksToDelete.find(
-                            (link) => link.id === comment.targetId
-                        )
-                    )
-                );
-
-            commentsToDelete.forEach((comment) => {
-                handleDeleteComment(comment.id);
-            });
+            deleteNode({ graphId, nodeId: id });
+            initGraph(loadGraph({ name: graphName }));
         },
-        [comments, handleDeleteComment, handleDeleteLink, links]
+        [deleteNode, graphId, graphName, initGraph, loadGraph]
     );
 
-    const handleEditNode = React.useCallback((id: IdType, node: INode) => {
-        setNodes((prevNodes) =>
-            prevNodes.map((prevNode) => (prevNode.id === id ? node : prevNode))
-        );
-    }, []);
+    const handleUpdateNode = React.useCallback(
+        (id: IdType, node: INode) => {
+            setNodes((prevNodes) =>
+                prevNodes.map((prevNode) =>
+                    prevNode.id === id
+                        ? updateNode({ graphId, node })
+                        : prevNode
+                )
+            );
+        },
+        [graphId, updateNode]
+    );
 
-    const handleAddTag = React.useCallback((tag: ITag) => {
-        setTags((prevTags) => [...prevTags, tag]);
-    }, []);
+    const handleAddTag = React.useCallback(
+        (tag: NewTag | ITag) => {
+            const createdTag = createTag({ graphId, tag });
+            setTags((prevTags) => [...prevTags, createdTag]);
+            return createdTag;
+        },
+        [createTag, graphId]
+    );
 
     const handleDeleteTag = React.useCallback(
         (id: IdType) => {
-            setTags((prevTags) => prevTags.filter((tag) => tag.id !== id));
-
-            nodes.forEach((node) => {
-                if (node.tags.includes(id)) {
-                    handleEditNode(node.id, {
-                        ...node,
-                        tags: node.tags.filter((tagId) => tagId !== id),
-                    });
-                }
-            });
+            deleteTag({ graphId, tagId: id });
+            initGraph(loadGraph({ name: graphName }));
         },
-        [handleEditNode, nodes]
+        [deleteTag, graphId, graphName, initGraph, loadGraph]
     );
 
-    const handleEditTag = React.useCallback((id: IdType, tag: ITag) => {
-        setTags((prevTags) =>
-            prevTags.map((prevTag) => (prevTag.id === id ? tag : prevTag))
-        );
-    }, []);
+    const handleUpdateTag = React.useCallback(
+        (id: IdType, tag: ITag) => {
+            setTags((prevTags) =>
+                prevTags.map((prevTag) =>
+                    prevTag.id === id ? updateTag({ graphId, tag }) : prevTag
+                )
+            );
+        },
+        [graphId, updateTag]
+    );
 
     const getNode = React.useCallback(
         (id: IdType) => nodes.find((node) => node.id === id),
@@ -258,7 +239,6 @@ export default function GraphProvider({
     return (
         <GraphContext.Provider
             value={{
-                getNewId,
                 nodes,
                 links,
                 comments,
@@ -271,12 +251,12 @@ export default function GraphProvider({
                 deleteComment: handleDeleteComment,
                 deleteLink: handleDeleteLink,
                 deleteNode: handleDeleteNode,
-                editComment: handleEditComment,
-                editLink: handleEditLink,
-                editNode: handleEditNode,
+                updateComment: handleUpdateComment,
+                updateLink: handleUpdateLink,
+                updateNode: handleUpdateNode,
                 addTag: handleAddTag,
                 deleteTag: handleDeleteTag,
-                editTag: handleEditTag,
+                updateTag: handleUpdateTag,
                 getNode,
                 getLink,
                 getComment,
