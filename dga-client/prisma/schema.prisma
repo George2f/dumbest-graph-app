@@ -37,6 +37,7 @@ model Link {
   Comment Comment[]
 
   name     String
+  type     String
   sourceId Int
   Source   Node   @relation(name: "source", fields: [sourceId], references: [id])
   targetId Int

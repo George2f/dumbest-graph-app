@@ -10,30 +10,15 @@ export default function SqliteStoragePersistenceProvider({
 }: IProviderProps) {
     const handleClearGraph = () => {};
 
-    const handleLoadGraph = ({
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        id,
-    }: {
-        id: string;
-    }):
-        | { nodes: INode[]; links: ILink[]; comments: IComment[]; tags: ITag[] }
-        | undefined => {
-        return undefined;
-    };
-
-    const handleSaveGraph = ({
-        id,
-        graph,
-    }: {
-        id: string;
-        graph: {
-            nodes: INode[];
-            links: ILink[];
-            comments: IComment[];
-            tags: ITag[];
+    const handleLoadGraph = ({ name }: { name: string }) => {
+        return {
+            id: 0,
+            name: '',
+            nodes: [],
+            links: [],
+            comments: [],
+            tags: [],
         };
-    }) => {
-        return { id, graph };
     };
 
     return (
@@ -41,7 +26,18 @@ export default function SqliteStoragePersistenceProvider({
             value={{
                 clearGraph: handleClearGraph,
                 loadGraph: handleLoadGraph,
-                saveGraph: handleSaveGraph,
+                createComment: () => ({}) as IComment,
+                createLink: () => ({}) as ILink,
+                createNode: () => ({}) as INode,
+                createTag: () => ({}) as ITag,
+                deleteComment: () => ({}) as IComment,
+                deleteLink: () => ({}) as ILink,
+                deleteNode: () => ({}) as INode,
+                deleteTag: () => ({}) as ITag,
+                updateComment: () => ({}) as IComment,
+                updateLink: () => ({}) as ILink,
+                updateNode: () => ({}) as INode,
+                updateTag: () => ({}) as ITag,
             }}>
             {children}
         </GraphPersistenceContext.Provider>
