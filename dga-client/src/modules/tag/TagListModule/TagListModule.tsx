@@ -15,11 +15,7 @@ export default function TagListModule() {
                     key={tag.id}
                     tag={tag}
                     onChange={(changedTag) => {
-                        const command = new EditTagCommand(
-                            tag.id,
-                            changedTag,
-                            graph
-                        );
+                        const command = new EditTagCommand(changedTag, graph);
 
                         command.execute();
                         history.push(command);

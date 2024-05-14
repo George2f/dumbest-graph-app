@@ -20,7 +20,7 @@ export default function GraphProvider({
     children,
     defaultGraphId,
     defaultGraphName,
-}: IGraphProviderProps) {
+}: Readonly<IGraphProviderProps>) {
     const {
         clearGraph,
         createComment,
@@ -73,12 +73,13 @@ export default function GraphProvider({
     );
 
     useMount(() => {
-        const loadedGraph = loadGraph({ name: graphName });
-        if (loadedGraph) {
-            initGraph(loadedGraph);
-        } else {
-            throw new Error(`Graph ${graphName} not found`);
-        }
+        loadGraph({ name: graphName }).then((loadedGraph) => {
+            if (loadedGraph) {
+                initGraph(loadedGraph);
+            } else {
+                throw new Error(`Graph ${graphName} not found`);
+            }
+        });
     });
 
     const handleClearGraph = React.useCallback(() => {
@@ -87,8 +88,8 @@ export default function GraphProvider({
     }, [clearGraph, graphId, graphName, loadGraph]);
 
     const handleLoadGraph = React.useCallback(
-        (newName: string) => {
-            const graph = loadGraph({ name: newName });
+        async (newName: string) => {
+            const graph = await loadGraph({ name: newName });
             if (graph) {
                 initGraph(graph);
             } else {
@@ -99,8 +100,8 @@ export default function GraphProvider({
     );
 
     const handleAddComment = React.useCallback(
-        (comment: NewComment | IComment) => {
-            const createdComment = createComment({ graphId, comment });
+        async (comment: NewComment | IComment) => {
+            const createdComment = await createComment({ graphId, comment });
             setComments((prevComments) => [...prevComments, createdComment]);
             return createdComment;
         },
@@ -108,20 +109,19 @@ export default function GraphProvider({
     );
 
     const handleDeleteComment = React.useCallback(
-        (id: IdType) => {
+        async (id: IdType) => {
             deleteComment({ graphId, commentId: id });
-            initGraph(loadGraph({ name: graphName }));
+            initGraph(await loadGraph({ name: graphName }));
         },
         [deleteComment, graphId, graphName, initGraph, loadGraph]
     );
 
     const handleUpdateComment = React.useCallback(
-        (id: IdType, comment: IComment) => {
+        async (id: IdType, comment: IComment) => {
+            const updatedComment = await updateComment({ graphId, comment });
             setComments((prevComments) =>
                 prevComments.map((prevComment) =>
-                    prevComment.id === id
-                        ? updateComment({ graphId, comment })
-                        : prevComment
+                    prevComment.id === id ? updatedComment : prevComment
                 )
             );
         },
@@ -129,8 +129,8 @@ export default function GraphProvider({
     );
 
     const handleAddLink = React.useCallback(
-        (link: NewLink | ILink) => {
-            const createdLink = createLink({ graphId, link });
+        async (link: NewLink | ILink) => {
+            const createdLink = await createLink({ graphId, link });
             setLinks((prevLinks) => [...prevLinks, createdLink]);
             return createdLink;
         },
@@ -146,12 +146,11 @@ export default function GraphProvider({
     );
 
     const handleUpdateLink = React.useCallback(
-        (id: IdType, link: ILink) => {
+        async (id: IdType, link: ILink) => {
+            const updatedLink = await updateLink({ graphId, link });
             setLinks((prevLinks) =>
                 prevLinks.map((prevLink) =>
-                    prevLink.id === id
-                        ? updateLink({ graphId, link })
-                        : prevLink
+                    prevLink.id === id ? updatedLink : prevLink
                 )
             );
         },
@@ -159,8 +158,8 @@ export default function GraphProvider({
     );
 
     const handleAddNode = React.useCallback(
-        (node: NewNode | INode) => {
-            const createdNode = createNode({ graphId, node });
+        async (node: NewNode | INode) => {
+            const createdNode = await createNode({ graphId, node });
             setNodes((prevNodes) => [...prevNodes, createdNode]);
             return createdNode;
         },
@@ -168,20 +167,19 @@ export default function GraphProvider({
     );
 
     const handleDeleteNode = React.useCallback(
-        (id: IdType) => {
+        async (id: IdType) => {
             deleteNode({ graphId, nodeId: id });
-            initGraph(loadGraph({ name: graphName }));
+            initGraph(await loadGraph({ name: graphName }));
         },
         [deleteNode, graphId, graphName, initGraph, loadGraph]
     );
 
     const handleUpdateNode = React.useCallback(
-        (id: IdType, node: INode) => {
+        async (id: IdType, node: INode) => {
+            const updatedNode = await updateNode({ graphId, node });
             setNodes((prevNodes) =>
                 prevNodes.map((prevNode) =>
-                    prevNode.id === id
-                        ? updateNode({ graphId, node })
-                        : prevNode
+                    prevNode.id === id ? updatedNode : prevNode
                 )
             );
         },
@@ -189,8 +187,8 @@ export default function GraphProvider({
     );
 
     const handleAddTag = React.useCallback(
-        (tag: NewTag | ITag) => {
-            const createdTag = createTag({ graphId, tag });
+        async (tag: NewTag | ITag) => {
+            const createdTag = await createTag({ graphId, tag });
             setTags((prevTags) => [...prevTags, createdTag]);
             return createdTag;
         },
@@ -198,18 +196,19 @@ export default function GraphProvider({
     );
 
     const handleDeleteTag = React.useCallback(
-        (id: IdType) => {
+        async (id: IdType) => {
             deleteTag({ graphId, tagId: id });
-            initGraph(loadGraph({ name: graphName }));
+            initGraph(await loadGraph({ name: graphName }));
         },
         [deleteTag, graphId, graphName, initGraph, loadGraph]
     );
 
     const handleUpdateTag = React.useCallback(
-        (id: IdType, tag: ITag) => {
+        async (id: IdType, tag: ITag) => {
+            const updatedTag = await updateTag({ graphId, tag });
             setTags((prevTags) =>
                 prevTags.map((prevTag) =>
-                    prevTag.id === id ? updateTag({ graphId, tag }) : prevTag
+                    prevTag.id === id ? updatedTag : prevTag
                 )
             );
         },

@@ -13,11 +13,11 @@ export default class AddTagCommand extends AbstractCommand {
         this.graph = graph;
     }
 
-    public execute() {
+    public async execute() {
         if (this.createdTag) {
             this.graph.addTag(this.createdTag);
         } else {
-            this.createdTag = this.graph.addTag(this.newTag);
+            this.createdTag = await this.graph.addTag(this.newTag);
         }
     }
 

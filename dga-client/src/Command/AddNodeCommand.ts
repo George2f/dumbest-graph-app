@@ -13,11 +13,11 @@ export default class AddNodeCommand extends AbstractCommand {
         this.graph = graph;
     }
 
-    public execute() {
+    public async execute() {
         if (this.createdNode) {
             this.graph.addNode(this.createdNode);
         } else {
-            this.createdNode = this.graph.addNode(this.newNode);
+            this.createdNode = await this.graph.addNode(this.newNode);
         }
     }
 

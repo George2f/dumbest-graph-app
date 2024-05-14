@@ -8,7 +8,9 @@ interface IHistoryProviderProps {
     children: React.ReactNode;
 }
 
-export default function HistoryProvider({ children }: IHistoryProviderProps) {
+export default function HistoryProvider({
+    children,
+}: Readonly<IHistoryProviderProps>) {
     const [history, setHistory] = React.useState<AbstractCommand[]>([]);
     const [index, setIndex] = React.useState<number>(-1);
 

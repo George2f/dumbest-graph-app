@@ -13,11 +13,11 @@ export default class AddCommentCommand extends AbstractCommand {
         this.graph = graph;
     }
 
-    public execute() {
+    public async execute() {
         if (this.createdComment) {
             this.graph.addComment(this.createdComment);
         } else {
-            this.createdComment = this.graph.addComment(this.newComment);
+            this.createdComment = await this.graph.addComment(this.newComment);
         }
     }
 

@@ -12,69 +12,93 @@ interface IGraphPersistenceContextValue {
     }: {
         graphId: IdType;
         node: NewNode | INode;
-    }) => INode;
+    }) => Promise<INode>;
     createLink: ({
         graphId,
         link,
     }: {
         graphId: IdType;
         link: NewLink | ILink;
-    }) => ILink;
+    }) => Promise<ILink>;
     createComment: ({
         graphId,
         comment,
     }: {
         graphId: IdType;
         comment: NewComment | IComment;
-    }) => IComment;
+    }) => Promise<IComment>;
     createTag: ({
         graphId,
         tag,
     }: {
         graphId: IdType;
         tag: NewTag | ITag;
-    }) => ITag;
-    updateNode: ({ graphId, node }: { graphId: IdType; node: INode }) => INode;
-    updateLink: ({ graphId, link }: { graphId: IdType; link: ILink }) => ILink;
+    }) => Promise<ITag>;
+    updateNode: ({
+        graphId,
+        node,
+    }: {
+        graphId: IdType;
+        node: INode;
+    }) => Promise<INode>;
+    updateLink: ({
+        graphId,
+        link,
+    }: {
+        graphId: IdType;
+        link: ILink;
+    }) => Promise<ILink>;
     updateComment: ({
         graphId,
         comment,
     }: {
         graphId: IdType;
         comment: IComment;
-    }) => IComment;
-    updateTag: ({ graphId, tag }: { graphId: IdType; tag: ITag }) => ITag;
+    }) => Promise<IComment>;
+    updateTag: ({
+        graphId,
+        tag,
+    }: {
+        graphId: IdType;
+        tag: ITag;
+    }) => Promise<ITag>;
     deleteNode: ({
         graphId,
         nodeId,
     }: {
         graphId: IdType;
         nodeId: IdType;
-    }) => INode;
+    }) => Promise<INode>;
     deleteLink: ({
         graphId,
         linkId,
     }: {
         graphId: IdType;
         linkId: IdType;
-    }) => ILink;
+    }) => Promise<ILink>;
     deleteComment: ({
         graphId,
         commentId,
     }: {
         graphId: IdType;
         commentId: IdType;
-    }) => IComment;
-    deleteTag: ({ graphId, tagId }: { graphId: IdType; tagId: IdType }) => ITag;
-    loadGraph: ({ name }: { name: string }) => {
+    }) => Promise<IComment>;
+    deleteTag: ({
+        graphId,
+        tagId,
+    }: {
+        graphId: IdType;
+        tagId: IdType;
+    }) => Promise<ITag>;
+    loadGraph: ({ name }: { name: string }) => Promise<{
         id: IdType;
         name: string;
         nodes: INode[];
         links: ILink[];
         comments: IComment[];
         tags: ITag[];
-    };
-    clearGraph: ({ id }: { id: IdType }) => void;
+    }>;
+    clearGraph: ({ id }: { id: IdType }) => Promise<void>;
 }
 
 const GraphPersistenceContext =

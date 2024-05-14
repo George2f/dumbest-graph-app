@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import GraphPersistenceContext from '../GraphPersistenceContext';
 import INode, { NewNode } from '../../types/INode';
 import ILink, { NewLink } from '../../types/ILink';
@@ -6,29 +5,36 @@ import IComment, { NewComment } from '../../types/IComment';
 import ITag, { NewTag } from '../../types/ITag';
 import IProviderProps from '../../providers/types/IProviderProps';
 import IdType from '../../types/IdType';
+import { useMemo } from 'react';
 
-export default function LocalStoragePersistenceProvider({
-    children,
-}: IProviderProps) {
-    const getGraph = (
-        id: IdType
-    ):
-        | {
-              nodes: (INode & { deleted?: boolean })[];
-              links: (ILink & { deleted?: boolean })[];
-              comments: (IComment & { deleted?: boolean })[];
-              tags: (ITag & { deleted?: boolean })[];
-              nextId: number;
-              id: IdType;
-              name: string;
-          }
-        | undefined => {
-        const graph = localStorage.getItem(id + '');
-        if (!graph) return undefined;
-        return JSON.parse(graph || '{}');
-    };
+const getGraph = (
+    id: IdType
+):
+    | {
+          nodes: (INode & { deleted?: boolean })[];
+          links: (ILink & { deleted?: boolean })[];
+          comments: (IComment & { deleted?: boolean })[];
+          tags: (ITag & { deleted?: boolean })[];
+          nextId: number;
+          id: IdType;
+          name: string;
+      }
+    | undefined => {
+    const graph = localStorage.getItem(id + '');
+    if (!graph) return undefined;
+    return JSON.parse(graph || '{}');
+};
 
-    const handleLoadGraph = useCallback(({ name }: { name: string }) => {
+const handleLoadGraph = ({ name }: { name: string }) => {
+    return new Promise<{
+        id: number;
+        name: string;
+        nextId: number;
+        nodes: INode[];
+        links: ILink[];
+        comments: IComment[];
+        tags: ITag[];
+    }>((resolve) => {
         console.debug('Loading graph');
         const graphs = JSON.parse(localStorage.getItem('graphs') || '{}');
         const graphId = parseInt(
@@ -41,7 +47,7 @@ export default function LocalStoragePersistenceProvider({
             const graph = getGraph(graphId);
             if (!graph) throw new Error('Graph not found');
             const { nodes, links, comments, tags, nextId } = graph;
-            return {
+            return resolve({
                 id: graphId,
                 name,
                 nextId,
@@ -49,7 +55,7 @@ export default function LocalStoragePersistenceProvider({
                 links: links.filter((l) => !l.deleted) || [],
                 comments: comments.filter((c) => !c.deleted) || [],
                 tags: tags.filter((t) => !t.deleted) || [],
-            };
+            });
         } else {
             const id = Object.keys(graphs).length + 1;
             const newGraph = {
@@ -64,11 +70,13 @@ export default function LocalStoragePersistenceProvider({
             localStorage.setItem(id + '', JSON.stringify(newGraph));
             graphs[id] = name;
             localStorage.setItem('graphs', JSON.stringify(graphs));
-            return newGraph;
+            return resolve(newGraph);
         }
-    }, []);
+    });
+};
 
-    const handleClearGraph = useCallback(({ id }: { id: IdType }) => {
+const handleClearGraph = ({ id }: { id: IdType }) => {
+    return new Promise<void>((resolve) => {
         console.debug('Clearing graph');
         const graph = getGraph(id);
 
@@ -83,15 +91,18 @@ export default function LocalStoragePersistenceProvider({
                 nextId: 1,
             })
         );
-    }, []);
+        resolve();
+    });
+};
 
-    const handleCreateNode = ({
-        graphId,
-        node,
-    }: {
-        graphId: number;
-        node: NewNode | INode;
-    }): INode => {
+const handleCreateNode = ({
+    graphId,
+    node,
+}: {
+    graphId: number;
+    node: NewNode | INode;
+}): Promise<INode> => {
+    return new Promise((resolve) => {
         console.debug('Creating node');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -116,23 +127,25 @@ export default function LocalStoragePersistenceProvider({
 
             localStorage.setItem(graphId + '', JSON.stringify(graph));
 
-            return node;
+            return resolve(node);
         } else {
             const newNode = { ...node, id: graph.nextId };
             graph.nextId++;
             graph.nodes.push(newNode);
             localStorage.setItem(graphId + '', JSON.stringify(graph));
-            return newNode;
+            return resolve(newNode);
         }
-    };
+    });
+};
 
-    const handleCreateLink = ({
-        graphId,
-        link,
-    }: {
-        graphId: number;
-        link: NewLink | ILink;
-    }): ILink => {
+const handleCreateLink = ({
+    graphId,
+    link,
+}: {
+    graphId: number;
+    link: NewLink | ILink;
+}): Promise<ILink> => {
+    return new Promise((resolve) => {
         console.debug('Creating link');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -151,23 +164,25 @@ export default function LocalStoragePersistenceProvider({
 
             localStorage.setItem(graphId + '', JSON.stringify(graph));
 
-            return link;
+            return resolve(link);
         } else {
             const newLink = { ...link, id: graph.nextId };
             graph.nextId++;
             graph.links.push(newLink);
             localStorage.setItem(graphId + '', JSON.stringify(graph));
-            return newLink;
+            return resolve(newLink);
         }
-    };
+    });
+};
 
-    const handleCreateComment = ({
-        graphId,
-        comment,
-    }: {
-        graphId: IdType;
-        comment: NewComment | IComment;
-    }): IComment => {
+const handleCreateComment = ({
+    graphId,
+    comment,
+}: {
+    graphId: IdType;
+    comment: NewComment | IComment;
+}): Promise<IComment> => {
+    return new Promise((resolve) => {
         console.debug('Creating comment');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -181,23 +196,25 @@ export default function LocalStoragePersistenceProvider({
 
             localStorage.setItem(graphId + '', JSON.stringify(graph));
 
-            return comment;
+            return resolve(comment);
         } else {
             const newComment = { ...comment, id: graph.nextId };
             graph.nextId++;
             graph.comments.push(newComment);
             localStorage.setItem(graphId + '', JSON.stringify(graph));
-            return newComment;
+            return resolve(newComment);
         }
-    };
+    });
+};
 
-    const handleCreateTag = ({
-        graphId,
-        tag,
-    }: {
-        graphId: IdType;
-        tag: NewTag | ITag;
-    }): ITag => {
+const handleCreateTag = ({
+    graphId,
+    tag,
+}: {
+    graphId: IdType;
+    tag: NewTag | ITag;
+}): Promise<ITag> => {
+    return new Promise((resolve) => {
         console.debug('Creating tag');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -209,23 +226,25 @@ export default function LocalStoragePersistenceProvider({
 
             localStorage.setItem(graphId + '', JSON.stringify(graph));
 
-            return tag;
+            return resolve(tag);
         } else {
             const newTag = { ...tag, id: graph.nextId };
             graph.nextId++;
             graph.tags.push(newTag);
             localStorage.setItem(graphId + '', JSON.stringify(graph));
-            return newTag;
+            return resolve(newTag);
         }
-    };
+    });
+};
 
-    const handleUpdateNode = ({
-        graphId,
-        node,
-    }: {
-        graphId: IdType;
-        node: INode;
-    }): INode => {
+const handleUpdateNode = ({
+    graphId,
+    node,
+}: {
+    graphId: IdType;
+    node: INode;
+}): Promise<INode> => {
+    return new Promise((resolve) => {
         console.debug('Updating node');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -233,16 +252,18 @@ export default function LocalStoragePersistenceProvider({
         const index = graph.nodes.findIndex(({ id }) => id === node.id);
         graph.nodes[index] = node;
         localStorage.setItem(graphId + '', JSON.stringify(graph));
-        return node;
-    };
+        return resolve(node);
+    });
+};
 
-    const handleUpdateLink = ({
-        graphId,
-        link,
-    }: {
-        graphId: IdType;
-        link: ILink;
-    }): ILink => {
+const handleUpdateLink = ({
+    graphId,
+    link,
+}: {
+    graphId: IdType;
+    link: ILink;
+}): Promise<ILink> => {
+    return new Promise((resolve) => {
         console.debug('Updating link');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -250,16 +271,18 @@ export default function LocalStoragePersistenceProvider({
         const index = graph.links.findIndex(({ id }) => id === link.id);
         graph.links[index] = link;
         localStorage.setItem(graphId + '', JSON.stringify(graph));
-        return link;
-    };
+        return resolve(link);
+    });
+};
 
-    const handleUpdateComment = ({
-        graphId,
-        comment,
-    }: {
-        graphId: IdType;
-        comment: IComment;
-    }): IComment => {
+const handleUpdateComment = ({
+    graphId,
+    comment,
+}: {
+    graphId: IdType;
+    comment: IComment;
+}): Promise<IComment> => {
+    return new Promise((resolve) => {
         console.debug('Updating comment');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -267,16 +290,18 @@ export default function LocalStoragePersistenceProvider({
         const index = graph.comments.findIndex(({ id }) => id === comment.id);
         graph.comments[index] = comment;
         localStorage.setItem(graphId + '', JSON.stringify(graph));
-        return comment;
-    };
+        return resolve(comment);
+    });
+};
 
-    const handleUpdateTag = ({
-        graphId,
-        tag,
-    }: {
-        graphId: IdType;
-        tag: ITag;
-    }): ITag => {
+const handleUpdateTag = ({
+    graphId,
+    tag,
+}: {
+    graphId: IdType;
+    tag: ITag;
+}): Promise<ITag> => {
+    return new Promise((resolve) => {
         console.debug('Updating tag');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -284,19 +309,21 @@ export default function LocalStoragePersistenceProvider({
         const index = graph.tags.findIndex(({ id }) => id === tag.id);
         graph.tags[index] = tag;
         localStorage.setItem(graphId + '', JSON.stringify(graph));
-        return tag;
-    };
+        return resolve(tag);
+    });
+};
 
-    const handleDeleteNode = ({
-        graphId,
-        nodeId,
-    }: {
-        graphId: IdType;
-        nodeId: IdType;
-    }): INode => {
+const handleDeleteNode = ({
+    graphId,
+    nodeId,
+}: {
+    graphId: IdType;
+    nodeId: IdType;
+}): Promise<INode> => {
+    return new Promise((resolve, reject) => {
         console.debug('Deleting node');
         const graph = getGraph(graphId);
-        if (!graph) throw new Error('Graph not found');
+        if (!graph) return reject(new Error('Graph not found'));
 
         const index = graph.nodes.findIndex(({ id }) => id === nodeId);
 
@@ -330,16 +357,18 @@ export default function LocalStoragePersistenceProvider({
                 comments: newComments,
             })
         );
-        return graph.nodes[index];
-    };
+        return resolve(graph.nodes[index]);
+    });
+};
 
-    const handleDeleteLink = ({
-        graphId,
-        linkId,
-    }: {
-        graphId: IdType;
-        linkId: IdType;
-    }): ILink => {
+const handleDeleteLink = ({
+    graphId,
+    linkId,
+}: {
+    graphId: IdType;
+    linkId: IdType;
+}): Promise<ILink> => {
+    return new Promise((resolve) => {
         console.debug('Deleting link');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -359,16 +388,18 @@ export default function LocalStoragePersistenceProvider({
             JSON.stringify({ ...graph, comments: newComments })
         );
 
-        return graph.links[index];
-    };
+        return resolve(graph.links[index]);
+    });
+};
 
-    const handleDeleteComment = ({
-        graphId,
-        commentId,
-    }: {
-        graphId: IdType;
-        commentId: IdType;
-    }): IComment => {
+const handleDeleteComment = ({
+    graphId,
+    commentId,
+}: {
+    graphId: IdType;
+    commentId: IdType;
+}) =>
+    new Promise<IComment>((resolve) => {
         console.debug('Deleting comment');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -378,16 +409,17 @@ export default function LocalStoragePersistenceProvider({
         graph.comments[index].deleted = true;
 
         localStorage.setItem(graphId + '', JSON.stringify(graph));
-        return graph.comments[index];
-    };
+        return resolve(graph.comments[index]);
+    });
 
-    const handleDeleteTag = ({
-        graphId,
-        tagId,
-    }: {
-        graphId: IdType;
-        tagId: IdType;
-    }): ITag => {
+const handleDeleteTag = ({
+    graphId,
+    tagId,
+}: {
+    graphId: IdType;
+    tagId: IdType;
+}) =>
+    new Promise<ITag>((resolve) => {
         console.debug('Deleting tag');
         const graph = getGraph(graphId);
         if (!graph) throw new Error('Graph not found');
@@ -404,27 +436,34 @@ export default function LocalStoragePersistenceProvider({
             graphId + '',
             JSON.stringify({ ...graph, nodes: newNodes })
         );
-        return graph.tags[index];
-    };
+        return resolve(graph.tags[index]);
+    });
+
+export default function LocalStoragePersistenceProvider({
+    children,
+}: Readonly<IProviderProps>) {
+    const value = useMemo(
+        () => ({
+            clearGraph: handleClearGraph,
+            loadGraph: handleLoadGraph,
+            createComment: handleCreateComment,
+            createLink: handleCreateLink,
+            createNode: handleCreateNode,
+            createTag: handleCreateTag,
+            deleteComment: handleDeleteComment,
+            deleteLink: handleDeleteLink,
+            deleteNode: handleDeleteNode,
+            deleteTag: handleDeleteTag,
+            updateComment: handleUpdateComment,
+            updateLink: handleUpdateLink,
+            updateNode: handleUpdateNode,
+            updateTag: handleUpdateTag,
+        }),
+        []
+    );
 
     return (
-        <GraphPersistenceContext.Provider
-            value={{
-                clearGraph: handleClearGraph,
-                loadGraph: handleLoadGraph,
-                createComment: handleCreateComment,
-                createLink: handleCreateLink,
-                createNode: handleCreateNode,
-                createTag: handleCreateTag,
-                deleteComment: handleDeleteComment,
-                deleteLink: handleDeleteLink,
-                deleteNode: handleDeleteNode,
-                deleteTag: handleDeleteTag,
-                updateComment: handleUpdateComment,
-                updateLink: handleUpdateLink,
-                updateNode: handleUpdateNode,
-                updateTag: handleUpdateTag,
-            }}>
+        <GraphPersistenceContext.Provider value={value}>
             {children}
         </GraphPersistenceContext.Provider>
     );

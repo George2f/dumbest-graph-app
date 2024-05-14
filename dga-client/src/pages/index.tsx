@@ -14,31 +14,29 @@ export default function Root({ children }: { children: ReactNode }) {
     const [isNewTagModalOpen, setIsNewTagModalOpen] = useState(false);
 
     return (
-        <>
-            <div className="flex h-full flex-col overflow-y-hidden">
-                <Header />
-                <div className="relative overflow-y-scroll">{children}</div>
-                <NewElementFloater
-                    onNewLinkClick={() => setIsNewLinkModalOpen(true)}
-                    onNewNodeClick={() => setIsNewNodeModalOpen(true)}
-                    onNewTagClick={() => setIsNewTagModalOpen(true)}
-                />
-                <Modal
-                    isOpen={isNewNodeModalOpen}
-                    onDismiss={() => setIsNewNodeModalOpen(false)}>
-                    <NewNodeModule />
-                </Modal>
-                <Modal
-                    isOpen={isNewLinkModalOpen}
-                    onDismiss={() => setIsNewLinkModalOpen(false)}>
-                    <NewLinkModule />
-                </Modal>
-                <Modal
-                    isOpen={isNewTagModalOpen}
-                    onDismiss={() => setIsNewTagModalOpen(false)}>
-                    <NewTagModule />
-                </Modal>
-            </div>
-        </>
+        <div className="flex h-full flex-col overflow-y-hidden">
+            <Header />
+            <div className="relative overflow-y-scroll">{children}</div>
+            <NewElementFloater
+                onNewLinkClick={() => setIsNewLinkModalOpen(true)}
+                onNewNodeClick={() => setIsNewNodeModalOpen(true)}
+                onNewTagClick={() => setIsNewTagModalOpen(true)}
+            />
+            <Modal
+                isOpen={isNewNodeModalOpen}
+                onDismiss={() => setIsNewNodeModalOpen(false)}>
+                <NewNodeModule />
+            </Modal>
+            <Modal
+                isOpen={isNewLinkModalOpen}
+                onDismiss={() => setIsNewLinkModalOpen(false)}>
+                <NewLinkModule />
+            </Modal>
+            <Modal
+                isOpen={isNewTagModalOpen}
+                onDismiss={() => setIsNewTagModalOpen(false)}>
+                <NewTagModule />
+            </Modal>
+        </div>
     );
 }

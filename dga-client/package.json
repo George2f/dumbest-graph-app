@@ -1,7 +1,7 @@
 {
     "name": "dumbest-graph-app",
     "private": true,
-    "version": "2.0.1",
+    "version": "2.0.2",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -9,7 +9,8 @@
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
         "prepare-migration": "npx prisma migrate dev --create-only",
-        "prepare-migration-down": "npx prisma migrate diff --from-schema-datamodel prisma/schema.prisma --to-schema-datasource prisma/schema.prisma --script > prisma/migrations/down.sql"
+        "prepare-migration-down": "npx prisma migrate diff --from-schema-datamodel prisma/schema.prisma --to-schema-datasource prisma/schema.prisma --script > prisma/migrations/down.sql",
+        "migrate": "npx prisma migrate dev && npx prisma generate"
     },
     "dependencies": {
         "@prisma/client": "^5.11.0",

@@ -13,11 +13,11 @@ export default class AddLinkCommand extends AbstractCommand {
         this.graph = graph;
     }
 
-    public execute() {
+    public async execute() {
         if (this.createdLink) {
             this.graph.addLink(this.createdLink);
         } else {
-            this.createdLink = this.graph.addLink(this.newLink);
+            this.createdLink = await this.graph.addLink(this.newLink);
         }
     }
 
