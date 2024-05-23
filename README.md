@@ -25,7 +25,7 @@
 - make into a monorepo with subrepos - canceled
 - add db subfolder - canceled
 - rework local persistence - done
-- persist graph with SQLite
+- persist graph with SQLite - postponed, prisma can't run in the browser
 - make MSW persistence layer
 - add go server subfolder
 - persist graph through backend

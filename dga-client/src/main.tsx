@@ -5,6 +5,7 @@ import './index.css';
 import GraphProvider from './providers/GraphProvider';
 import HistoryProvider from './providers/HistoryProvider';
 import LocalStoragePersistenceProvider from './persistence/LocalStoragePersistenceProvider';
+import SqliteStoragePersistenceProvider from './persistence/SqliteStoragePersistenceProvider';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
