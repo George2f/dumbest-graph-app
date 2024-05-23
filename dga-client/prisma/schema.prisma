@@ -8,31 +8,35 @@ datasource db {
 }
 
 model Node {
-  id      Int   @id @default(autoincrement())
-  Graph   Graph @relation(fields: [graphId], references: [id])
-  graphId Int
+  id        Int       @id @default(autoincrement())
+  Graph     Graph     @relation(fields: [graphId], references: [id])
+  graphId   Int
+  deletedAt DateTime?
 
   Comment Comment[]
 
-  name      String
-  SourceOf  Link[]      @relation(name: "source")
-  TargetOf  Link[]      @relation(name: "target")
-  Attribute Attribute[]
+  name       String
+  SourceOf   Link[]       @relation(name: "source")
+  TargetOf   Link[]       @relation(name: "target")
+  Attribute  Attribute[]
+  TaggedWith TaggedWith[]
 }
 
 model Attribute {
-  id     Int  @id @default(autoincrement())
-  nodeId Int
-  Node   Node @relation(fields: [nodeId], references: [id])
+  id        Int       @id @default(autoincrement())
+  nodeId    Int
+  Node      Node      @relation(fields: [nodeId], references: [id])
+  deletedAt DateTime?
 
   key   String
   value String
 }
 
 model Link {
-  id      Int   @id @default(autoincrement())
-  Graph   Graph @relation(fields: [graphId], references: [id])
-  graphId Int
+  id        Int       @id @default(autoincrement())
+  Graph     Graph     @relation(fields: [graphId], references: [id])
+  graphId   Int
+  deletedAt DateTime?
 
   Comment Comment[]
 
@@ -45,9 +49,10 @@ model Link {
 }
 
 model Comment {
-  id      Int   @id @default(autoincrement())
-  Graph   Graph @relation(fields: [graphId], references: [id])
-  graphId Int
+  id        Int       @id @default(autoincrement())
+  Graph     Graph     @relation(fields: [graphId], references: [id])
+  graphId   Int
+  deletedAt DateTime?
 
   node   Node? @relation(fields: [nodeId], references: [id])
   nodeId Int?
@@ -58,17 +63,30 @@ model Comment {
 }
 
 model Tag {
-  id      Int   @id @default(autoincrement())
-  Graph   Graph @relation(fields: [graphId], references: [id])
-  graphId Int
+  id        Int       @id @default(autoincrement())
+  Graph     Graph     @relation(fields: [graphId], references: [id])
+  graphId   Int
+  deletedAt DateTime?
 
-  name  String
-  color String
+  name       String
+  color      String
+  TaggedWith TaggedWith[]
+}
+
+model TaggedWith {
+  tagId     Int
+  Tag       Tag       @relation(fields: [tagId], references: [id])
+  nodeId    Int
+  Node      Node      @relation(fields: [nodeId], references: [id])
+  deletedAt DateTime?
+
+  @@id([tagId, nodeId])
 }
 
 model Graph {
-  id   Int    @id @default(autoincrement())
-  name String
+  id        Int       @id @default(autoincrement())
+  name      String
+  deletedAt DateTime?
 
   nodes    Node[]
   links    Link[]
