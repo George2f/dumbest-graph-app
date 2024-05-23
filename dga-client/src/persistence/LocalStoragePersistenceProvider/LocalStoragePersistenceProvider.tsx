@@ -374,19 +374,10 @@ const handleDeleteLink = ({
         if (!graph) throw new Error('Graph not found');
 
         const index = graph.links.findIndex(({ id }) => id === linkId);
-        const newComments = graph.comments.map((c) => {
-            if (c.targetId === linkId) {
-                c.deleted = true;
-            }
-            return c;
-        });
 
         graph.links[index].deleted = true;
 
-        localStorage.setItem(
-            graphId + '',
-            JSON.stringify({ ...graph, comments: newComments })
-        );
+        localStorage.setItem(graphId + '', JSON.stringify({ ...graph }));
 
         return resolve(graph.links[index]);
     });

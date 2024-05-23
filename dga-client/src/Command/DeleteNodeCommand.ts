@@ -1,6 +1,4 @@
-import IComment from '../types/IComment';
 import IGraph from '../types/IGraph';
-import ILink from '../types/ILink';
 import INode from '../types/INode';
 import AbstractCommand from './AbstractCommand';
 

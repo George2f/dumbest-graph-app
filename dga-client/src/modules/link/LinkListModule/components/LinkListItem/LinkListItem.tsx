@@ -6,8 +6,6 @@ import EditLink from '../EditLink';
 import Button from '../../../../../components/Button';
 import Modal from '../../../../../components/Modal';
 import IGraph from '../../../../../types/IGraph';
-import NewCommentModule from '../../../../comment/NewCommentModule';
-import CommentListModule from '../../../../comment/CommentListModule';
 import ConfirmModal from '../../../../../components/ConfirmModal';
 import NodeDetailsModule from '../../../../node/NodeDetailsModule';
 
@@ -25,18 +23,11 @@ export default function LinkListItem({
     graph,
 }: ILinkListItemProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isCommentListModalOpen, setIsCommentListModalOpen] =
-        useState<boolean>(false);
-    const [isNewCommentOpen, setIsNewCommentOpen] = useState<boolean>(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] =
         useState<boolean>(false);
     const [isNodeDetailsModalOpen, setIsNodeDetailsModalOpen] =
         useState<boolean>(false);
     const [selectedNode, setSelectedNode] = useState<INode | undefined>();
-
-    const relatedComments = graph.comments.filter(
-        (comment) => comment.targetId === link.id
-    );
 
     const node1 = useMemo(
         () => graph.nodes.find((n) => n.id === link.node1Id),
@@ -83,18 +74,6 @@ export default function LinkListItem({
                             Delete
                         </Button>
                     </div>
-                    <div>
-                        Comments:
-                        {relatedComments.length ? (
-                            <Button
-                                onClick={() => setIsCommentListModalOpen(true)}>
-                                {relatedComments.length}
-                            </Button>
-                        ) : null}
-                        <Button onClick={() => setIsNewCommentOpen(true)}>
-                            Add
-                        </Button>
-                    </div>
                 </div>
             </div>
             <Modal isOpen={isModalOpen} onDismiss={() => setIsModalOpen(false)}>
@@ -118,16 +97,6 @@ export default function LinkListItem({
                         onChange={() => setIsNodeDetailsModalOpen(false)}
                     />
                 ) : null}
-            </Modal>
-            <NewCommentModule
-                isOpen={isNewCommentOpen}
-                link={link}
-                onClose={() => setIsNewCommentOpen(false)}
-            />
-            <Modal
-                isOpen={isCommentListModalOpen}
-                onDismiss={() => setIsCommentListModalOpen(false)}>
-                <CommentListModule link={link} />
             </Modal>
             <ConfirmModal
                 isOpen={isConfirmModalOpen}
