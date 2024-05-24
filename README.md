@@ -26,7 +26,7 @@
 - add db subfolder - canceled
 - rework local persistence - done
 - persist graph with SQLite - postponed, prisma can't run in the browser
-- make MSW persistence layer
+- make MSW persistence layer - done
 - add go server subfolder
 - persist graph through backend
 
