@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import DeleteLinkCommand from '../../../Command/DeleteLinkCommand';
 import EditLinkCommand from '../../../Command/EditLinkCommand';
-import { useGraph } from '../../../providers/GraphProvider';
-import { useHistory } from '../../../providers/HistoryProvider';
+import { useGraph } from '../../../model/GraphProvider';
+import { useHistory } from '../../../model/HistoryProvider';
 import INode from '../../../types/INode';
 import LinkListItem from './components/LinkListItem';
 

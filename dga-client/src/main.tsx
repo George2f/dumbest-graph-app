@@ -2,19 +2,37 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
-import GraphProvider from './providers/GraphProvider';
-import HistoryProvider from './providers/HistoryProvider';
-import LocalStoragePersistenceProvider from './persistence/LocalStoragePersistenceProvider';
-import SqliteStoragePersistenceProvider from './persistence/SqliteStoragePersistenceProvider';
+import GraphProvider from './model/GraphProvider';
+import HistoryProvider from './model/HistoryProvider';
+import PersistenceProvider from './persistence/PersistenceProvider';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
-        <LocalStoragePersistenceProvider>
-            <GraphProvider defaultGraphId={1} defaultGraphName="graph">
-                <HistoryProvider>
-                    <App />
-                </HistoryProvider>
-            </GraphProvider>
-        </LocalStoragePersistenceProvider>
-    </React.StrictMode>
-);
+async function enableMocking() {
+    if (import.meta.env.PROD) {
+        return;
+    }
+
+    const worker = await import('./mock/worker');
+
+    return worker.default.start();
+}
+
+function renderReact() {
+    return ReactDOM.createRoot(document.getElementById('root')!).render(
+        <React.StrictMode>
+            <PersistenceProvider
+                persistenceType={import.meta.env.VITE_PERSISTENCE_LAYER}>
+                <GraphProvider defaultGraphId={1} defaultGraphName="graph">
+                    <HistoryProvider>
+                        <App />
+                    </HistoryProvider>
+                </GraphProvider>
+            </PersistenceProvider>
+        </React.StrictMode>
+    );
+}
+
+if (import.meta.env.VITE_PERSISTENCE_LAYER === 'msw') {
+    enableMocking().then(renderReact);
+} else {
+    renderReact();
+}

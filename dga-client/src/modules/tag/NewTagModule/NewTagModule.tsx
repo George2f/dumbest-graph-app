@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
-import { useGraph } from '../../../providers/GraphProvider';
-import { useHistory } from '../../../providers/HistoryProvider';
+import { useGraph } from '../../../model/GraphProvider';
+import { useHistory } from '../../../model/HistoryProvider';
 import AddTagCommand from '../../../Command/AddTagCommand';
 import Button from '../../../components/Button';
 

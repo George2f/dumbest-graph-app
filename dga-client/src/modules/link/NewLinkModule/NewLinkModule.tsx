@@ -2,8 +2,8 @@ import React from 'react';
 import INode from '../../../types/INode';
 import LINK_TYPE_ENUM from '../../../types/LinkTypeEnum';
 import AddLinkCommand from '../../../Command/AddLinkCommand';
-import { useGraph } from '../../../providers/GraphProvider';
-import { useHistory } from '../../../providers/HistoryProvider';
+import { useGraph } from '../../../model/GraphProvider';
+import { useHistory } from '../../../model/HistoryProvider';
 import Button from '../../../components/Button';
 
 interface INewLinkModuleProps {

@@ -1,5 +1,5 @@
-import { useGraph } from '../../../providers/GraphProvider';
-import { useHistory } from '../../../providers/HistoryProvider';
+import { useGraph } from '../../../model/GraphProvider';
+import { useHistory } from '../../../model/HistoryProvider';
 import EditCommentCommand from '../../../Command/EditCommentCommand';
 import DeleteCommentCommand from '../../../Command/DeleteCommentCommand';
 import CommentListItem from './components/CommentListItem';

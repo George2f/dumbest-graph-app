@@ -1,7 +1,7 @@
 import DeleteTagCommand from '../../../Command/DeleteTagCommand';
 import EditTagCommand from '../../../Command/EditTagCommand';
-import { useGraph } from '../../../providers/GraphProvider';
-import { useHistory } from '../../../providers/HistoryProvider';
+import { useGraph } from '../../../model/GraphProvider';
+import { useHistory } from '../../../model/HistoryProvider';
 import TagListItem from './components/TagListItem';
 
 export default function TagListModule() {

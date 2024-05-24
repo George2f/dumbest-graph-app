@@ -22,7 +22,7 @@ export default function NodeListItem({
     node,
     onDelete,
     graph,
-}: INodeListItemProps) {
+}: Readonly<INodeListItemProps>) {
     const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
     const [isCommentListModalOpen, setIsCommentListModalOpen] =
         useState<boolean>(false);
@@ -81,7 +81,7 @@ export default function NodeListItem({
                         Delete
                     </Button>
                     <div className="flex flex-row flex-wrap gap-1.5">
-                        {node.tags.map((tagId) => (
+                        {node.tags?.map((tagId) => (
                             <TagPill key={tagId} tag={graph.getTag(tagId)!} />
                         ))}
                     </div>

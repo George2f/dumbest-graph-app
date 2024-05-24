@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { useGraph } from '../../../providers/GraphProvider';
-import { useHistory } from '../../../providers/HistoryProvider';
+import { useGraph } from '../../../model/GraphProvider';
+import { useHistory } from '../../../model/HistoryProvider';
 import AddNodeCommand from '../../../Command/AddNodeCommand';
 import Button from '../../../components/Button';
 import IdType from '../../../types/IdType';

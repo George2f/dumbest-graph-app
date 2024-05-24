@@ -1,7 +1,7 @@
 import { ForceGraph2D } from 'react-force-graph';
 import LINK_TYPE_ENUM from '../../types/LinkTypeEnum';
 import generateLinkName from '../../utils/parseLinkName';
-import { useGraph } from '../../providers/GraphProvider';
+import { useGraph } from '../../model/GraphProvider';
 import { useEffect, useMemo, useState } from 'react';
 import Button from '../../components/Button';
 import TagPill from '../../components/TagPill';

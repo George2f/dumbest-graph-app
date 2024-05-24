@@ -3,7 +3,7 @@ import INode, { NewNode } from '../../types/INode';
 import ILink, { NewLink } from '../../types/ILink';
 import IComment, { NewComment } from '../../types/IComment';
 import ITag, { NewTag } from '../../types/ITag';
-import IProviderProps from '../../providers/types/IProviderProps';
+import IProviderProps from '../../types/IProviderProps';
 import IdType from '../../types/IdType';
 import { useMemo } from 'react';
 

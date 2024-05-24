@@ -1,5 +1,5 @@
-import { useGraph } from '../../../providers/GraphProvider';
-import { useHistory } from '../../../providers/HistoryProvider';
+import { useGraph } from '../../../model/GraphProvider';
+import { useHistory } from '../../../model/HistoryProvider';
 import DeleteNodeCommand from '../../../Command/DeleteNodeCommand';
 import NodeListItem from './components/NodeListItem';
 import { useMemo, useState } from 'react';

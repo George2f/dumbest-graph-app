@@ -3,12 +3,12 @@ import IComment, { NewComment } from '../../types/IComment';
 import ILink, { NewLink } from '../../types/ILink';
 import INode, { NewNode } from '../../types/INode';
 import ITag, { NewTag } from '../../types/ITag';
-import IProviderProps from '../../providers/types/IProviderProps';
+import IProviderProps from '../../types/IProviderProps';
 import sqliteDataMapper from './sqliteDataMapper';
 import IdType from '../../types/IdType';
 import LINK_TYPE_ENUM from '../../types/LinkTypeEnum';
 
-export default function SqliteStoragePersistenceProvider({
+export default function SqlitePersistenceProvider({
     children,
 }: IProviderProps) {
     const handleClearGraph = async ({ id }: { id: IdType }): Promise<void> => {

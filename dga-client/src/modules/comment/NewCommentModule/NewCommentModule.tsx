@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useGraph } from '../../../providers/GraphProvider';
-import { useHistory } from '../../../providers/HistoryProvider';
+import { useGraph } from '../../../model/GraphProvider';
+import { useHistory } from '../../../model/HistoryProvider';
 import INode from '../../../types/INode';
 import ILink from '../../../types/ILink';
 import generateLinkName from '../../../utils/parseLinkName';
