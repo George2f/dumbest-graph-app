@@ -1,4 +1,4 @@
-# This is the dumbest graph app
+# This is DGA - Directional graph app
 
 ## TODO
 
