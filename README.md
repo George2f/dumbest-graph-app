@@ -27,6 +27,9 @@
 - rework local persistence - done
 - persist graph with SQLite - postponed, prisma can't run in the browser
 - make MSW persistence layer - done
+- move to NX monorepo - done
+- add node backend app - done
+- move mocked endpoints and sqlite access to node backend
 - add go server subfolder
 - persist graph through backend
 

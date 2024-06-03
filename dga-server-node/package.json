@@ -1,0 +1,10 @@
+{
+    "name": "dga-server-node",
+    "version": "0.1.0",
+    "private": true,
+    "main": "src/app.ts",
+    "scripts": {
+        "dev": "nodemon ./src/app.ts",
+        "start": "ts-node --transpile-only ./src/app.ts"
+    }
+}
